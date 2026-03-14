@@ -70,7 +70,7 @@ export async function getSubscribers(
   const pubId = getPublicationId();
 
   const res = await fetch(
-    `${BEEHIIV_API_URL}/publications/${pubId}/subscriptions?status=active&limit=${limit}&page=${page}`,
+    `${BEEHIIV_API_URL}/publications/${pubId}/subscriptions?status=active&limit=${limit}&page=${page}&expand[]=custom_fields`,
     { headers: getHeaders() }
   );
 
