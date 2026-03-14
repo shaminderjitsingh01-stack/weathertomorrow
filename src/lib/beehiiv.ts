@@ -24,6 +24,8 @@ export interface BeehiivSubscriber {
   id: string;
   email: string;
   status: string;
+  created?: number;
+  utm_source?: string;
   custom_fields: { name: string; value: string }[];
 }
 
