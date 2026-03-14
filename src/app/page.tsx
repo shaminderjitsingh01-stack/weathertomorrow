@@ -13,6 +13,7 @@ import WeatherTicker from "@/components/WeatherTicker";
 import WeatherParticles from "@/components/WeatherParticles";
 import TrendingWeather from "@/components/TrendingWeather";
 import FeaturedForecast from "@/components/FeaturedForecast";
+import LoginButton from "@/components/LoginButton";
 
 async function WeatherDisplay({
   lat,
@@ -125,6 +126,8 @@ export default async function HomePage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+
+      <LoginButton />
 
       {/* Live weather ticker — above everything */}
       <Suspense fallback={null}>

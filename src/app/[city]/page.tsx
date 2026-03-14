@@ -13,6 +13,7 @@ import { getWeatherByCoords, getWeatherGradient, getWeatherDescription, searchLo
 import { getCityBySlug, getCityLabel, slugToQuery, CityData } from "@/lib/cities";
 import SubscribeForm from "@/components/SubscribeForm";
 import ShareButton from "@/components/ShareButton";
+import LoginButton from "@/components/LoginButton";
 import { generateWeatherJsonLd, generateFaqJsonLd, generateBreadcrumbJsonLd } from "@/lib/structured-data";
 
 export const dynamicParams = true;
@@ -175,6 +176,8 @@ export default async function CityPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
+      <LoginButton />
+
       {/* Weather ticker at top */}
       <Suspense fallback={null}>
         <WeatherTicker />
