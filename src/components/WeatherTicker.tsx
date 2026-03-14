@@ -12,7 +12,7 @@ export default async function WeatherTicker() {
   const items = [...cities, ...cities];
 
   return (
-    <div className="ticker-container overflow-hidden border-b border-white/5 bg-black/20 backdrop-blur-sm">
+    <div className="ticker-container overflow-hidden border-b border-white/5 bg-black/20 backdrop-blur-sm pr-[85px]">
       <div className="ticker-scroll flex items-center gap-8 py-2 px-4 whitespace-nowrap">
         {items.map((city, i) => (
           <Link
