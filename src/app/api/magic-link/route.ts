@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSubscriberByEmail } from "@/lib/beehiiv";
+import { getSubscriberByEmail, createSubscriber } from "@/lib/beehiiv";
 import { getPreferencesUrl } from "@/lib/tokens";
 import { sendWeatherEmail } from "@/lib/resend";
 
@@ -11,12 +11,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Valid email required" }, { status: 400 });
     }
 
-    // Check if subscriber exists in Beehiiv
-    const subscriber = await getSubscriberByEmail(email);
+    // Check if subscriber exists — if not, auto-subscribe them
+    let subscriber = await getSubscriberByEmail(email);
 
     if (!subscriber) {
-      // Don't reveal whether email exists — always say "sent" for security
-      return NextResponse.json({ success: true });
+      // Auto-subscribe with defaults — they can set preferences via the magic link
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
+      await createSubscriber(email, "Not set", tz, 20, "tomorrow");
     }
 
     // Generate magic link
