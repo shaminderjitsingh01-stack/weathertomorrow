@@ -20,65 +20,39 @@ function MetricCard({
 }) {
   return (
     <div className="card-metric rounded-2xl p-4">
-      <div className="flex items-center gap-2 mb-2">
+      <div className="flex items-center gap-2 mb-2.5">
         <span className="text-white/40">{icon}</span>
         <span className="section-label">{label}</span>
       </div>
-      <div className="text-xl font-bold tracking-tight">{value}</div>
+      <div className="text-2xl font-extrabold tracking-tight">{value}</div>
       {sublabel && (
-        <div className="text-xs text-white/40 mt-0.5">{sublabel}</div>
+        <div className="text-[11px] text-white/35 mt-1 leading-tight">{sublabel}</div>
       )}
     </div>
   );
 }
 
-function WindIcon() {
+function SvgIcon({ d, size = 14 }: { d: string; size?: number }) {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M17.7 7.7a2.5 2.5 0 111.8 4.3H2" />
-      <path d="M9.6 4.6A2 2 0 1111 8H2" />
-      <path d="M12.6 19.4A2 2 0 1014 16H2" />
-    </svg>
-  );
-}
-
-function DropletIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z" />
-    </svg>
-  );
-}
-
-function SunIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="4" />
-      <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
-    </svg>
-  );
-}
-
-function RainIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M4 14.899A7 7 0 1115.71 8h1.79a4.5 4.5 0 012.5 8.242" />
-      <path d="M16 14v6M8 14v6M12 16v6" />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d={d} />
     </svg>
   );
 }
 
 export default function WeatherCard({
+  today,
   tomorrow,
   cityName,
   tomorrowDate,
 }: {
+  today: DailyForecast;
   tomorrow: DailyForecast;
   cityName: string;
   tomorrowDate: string;
 }) {
   const description = getWeatherDescription(tomorrow.weatherCode);
-  const summary = generateSummary(tomorrow, cityName);
+  const summary = generateSummary(today, tomorrow, cityName);
   const whatToWear = getWhatToWear(
     tomorrow.temperatureMax,
     tomorrow.temperatureMin,
@@ -110,111 +84,122 @@ export default function WeatherCard({
     });
   };
 
+  const tempDiff = Math.round(tomorrow.temperatureMax - today.temperatureMax);
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {/* Main temperature display */}
-      <div className="card-elevated rounded-3xl p-8 text-center">
-        <p className="section-label mb-4">
-          Tomorrow &middot; {formatDate(tomorrowDate)}
+      <div className="card-elevated rounded-3xl px-6 py-8 text-center">
+        <p className="section-label mb-5">
+          {formatDate(tomorrowDate)}
         </p>
 
-        <div className="flex justify-center mb-4">
-          <WeatherIcon code={tomorrow.weatherCode} size={100} />
+        <div className="flex justify-center mb-3">
+          <WeatherIcon code={tomorrow.weatherCode} size={110} />
         </div>
 
-        <div className="flex items-baseline justify-center gap-3 mb-2">
-          <span className="text-8xl font-extrabold tracking-tighter leading-none">
+        <div className="flex items-baseline justify-center gap-2 mb-1">
+          <span className="text-[5.5rem] font-extrabold tracking-tighter leading-none">
             {Math.round(tomorrow.temperatureMax)}°
           </span>
-          <div className="flex flex-col items-start">
-            <span className="text-2xl font-medium text-white/40">
+          <div className="flex flex-col items-start gap-0.5">
+            <span className="text-2xl font-semibold text-white/35">
               {Math.round(tomorrow.temperatureMin)}°
             </span>
-            <span className="text-xs text-white/30">LOW</span>
+            <span className="text-[10px] text-white/25 font-semibold uppercase tracking-wider">Low</span>
           </div>
         </div>
 
-        <p className="text-lg font-medium text-white/90 mb-1">{description}</p>
-        <p className="text-sm text-white/40">
-          Feels like {Math.round(tomorrow.apparentTemperatureMax)}° / {Math.round(tomorrow.apparentTemperatureMin)}°
-        </p>
+        <p className="text-lg font-semibold text-white/85 mb-1">{description}</p>
+
+        <div className="flex items-center justify-center gap-3 text-sm text-white/35">
+          <span>Feels {Math.round(tomorrow.apparentTemperatureMax)}°/{Math.round(tomorrow.apparentTemperatureMin)}°</span>
+          {Math.abs(tempDiff) > 1 && (
+            <>
+              <span className="text-white/15">|</span>
+              <span className={tempDiff > 0 ? "text-amber-400/70" : "text-blue-400/70"}>
+                {tempDiff > 0 ? "+" : ""}{tempDiff}° vs today
+              </span>
+            </>
+          )}
+        </div>
       </div>
 
       {/* Summary */}
       <div className="card rounded-2xl p-5">
-        <p className="section-label mb-2">Forecast Summary</p>
-        <p className="text-sm text-white/70 leading-relaxed">{summary}</p>
+        <p className="section-label mb-2">Summary</p>
+        <p className="text-[13px] text-white/60 leading-relaxed">{summary}</p>
       </div>
 
       {/* Metrics grid */}
       <div className="grid grid-cols-2 gap-3">
         <MetricCard
-          label="Precipitation"
+          label="Rain"
           value={`${tomorrow.precipitationProbabilityMax}%`}
-          sublabel={`${tomorrow.precipitationSum} mm expected`}
-          icon={<RainIcon />}
+          sublabel={tomorrow.precipitationSum > 0 ? `${tomorrow.precipitationSum} mm expected` : "No rainfall expected"}
+          icon={<SvgIcon d="M4 14.899A7 7 0 1115.71 8h1.79a4.5 4.5 0 012.5 8.242M16 14v6M8 14v6M12 16v6" />}
         />
         <MetricCard
           label="Wind"
           value={`${Math.round(tomorrow.windSpeedMax)} km/h`}
-          sublabel={`Gusts ${Math.round(tomorrow.windGustMax)} km/h`}
-          icon={<WindIcon />}
+          sublabel={`Gusts up to ${Math.round(tomorrow.windGustMax)} km/h`}
+          icon={<SvgIcon d="M17.7 7.7a2.5 2.5 0 111.8 4.3H2M9.6 4.6A2 2 0 1111 8H2M12.6 19.4A2 2 0 1014 16H2" />}
         />
         <MetricCard
           label="UV Index"
-          value={`${tomorrow.uvIndexMax}`}
+          value={tomorrow.uvIndexMax.toFixed(1)}
           sublabel={
-            tomorrow.uvIndexMax >= 8
-              ? "Very high — protection needed"
-              : tomorrow.uvIndexMax >= 6
-                ? "High — wear sunscreen"
-                : tomorrow.uvIndexMax >= 3
-                  ? "Moderate"
-                  : "Low"
+            tomorrow.uvIndexMax >= 11 ? "Extreme — avoid midday sun"
+            : tomorrow.uvIndexMax >= 8 ? "Very high — SPF 50+ essential"
+            : tomorrow.uvIndexMax >= 6 ? "High — sunscreen recommended"
+            : tomorrow.uvIndexMax >= 3 ? "Moderate — some protection"
+            : "Low — no protection needed"
           }
-          icon={<SunIcon />}
+          icon={<SvgIcon d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />}
         />
         <MetricCard
-          label="Total Rainfall"
+          label="Humidity"
           value={`${tomorrow.precipitationSum} mm`}
           sublabel={
-            tomorrow.precipitationSum > 10
-              ? "Heavy rainfall expected"
-              : tomorrow.precipitationSum > 2
-                ? "Light to moderate"
-                : "Little to none"
+            tomorrow.precipitationSum > 20 ? "Very heavy rainfall"
+            : tomorrow.precipitationSum > 10 ? "Heavy rainfall"
+            : tomorrow.precipitationSum > 2 ? "Light to moderate"
+            : "Little to none"
           }
-          icon={<DropletIcon />}
+          icon={<SvgIcon d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z" />}
         />
       </div>
 
       {/* Sunrise / Sunset */}
       <div className="card rounded-2xl p-5">
-        <p className="section-label mb-3">Sun Schedule</p>
+        <p className="section-label mb-4">Sun</p>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-amber-500/10 flex items-center justify-center">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FBBF24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+            <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FBBF24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 2v4M4.93 4.93l2.83 2.83M2 12h4M4.93 19.07l2.83-2.83" />
                 <circle cx="12" cy="12" r="4" />
+                <path d="M20 12h2M17.66 17.66l1.41 1.41M12 18v4M6.34 6.34L4.93 4.93" />
               </svg>
             </div>
             <div>
-              <div className="text-xs text-white/40">Sunrise</div>
-              <div className="font-bold text-lg">{formatTime(tomorrow.sunrise)}</div>
+              <div className="text-[10px] text-white/30 font-semibold uppercase tracking-wider">Sunrise</div>
+              <div className="font-bold text-lg tracking-tight">{formatTime(tomorrow.sunrise)}</div>
             </div>
           </div>
-          <div className="divider flex-1 mx-6" />
+          <div className="flex-1 mx-4">
+            <div className="h-px bg-gradient-to-r from-amber-500/20 via-white/10 to-orange-500/20" />
+          </div>
           <div className="flex items-center gap-3">
             <div>
-              <div className="text-xs text-white/40 text-right">Sunset</div>
-              <div className="font-bold text-lg">{formatTime(tomorrow.sunset)}</div>
+              <div className="text-[10px] text-white/30 font-semibold uppercase tracking-wider text-right">Sunset</div>
+              <div className="font-bold text-lg tracking-tight">{formatTime(tomorrow.sunset)}</div>
             </div>
-            <div className="w-10 h-10 rounded-full bg-orange-500/10 flex items-center justify-center">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F97316" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 10V2M4.93 10.93l2.83-2.83M2 18h4M18 18h4M19.07 10.93l-2.83-2.83" />
+            <div className="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F97316" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 10V2M4.93 10.93l1.41-1.41M2 18h4M18 18h4M19.07 10.93l-1.41-1.41" />
                 <path d="M3 18h18" />
-                <path d="M12 18a6 6 0 000-12" />
+                <path d="M12 18a6 6 0 010-12" />
               </svg>
             </div>
           </div>
@@ -223,11 +208,16 @@ export default function WeatherCard({
 
       {/* What to wear */}
       <div className="card rounded-2xl p-5">
-        <p className="section-label mb-3">What to Wear</p>
-        <div className="space-y-2.5">
+        <div className="flex items-center gap-2 mb-3">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-white/30">
+            <path d="M20.38 3.46L16 2 12 3.5 8 2 3.62 3.46a2 2 0 00-1.34 2.23l.58 3.47a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.47a2 2 0 00-1.34-2.23z" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          <span className="section-label">What to Wear</span>
+        </div>
+        <div className="space-y-2">
           {whatToWear.map((item, i) => (
-            <div key={i} className="flex items-center gap-3 text-sm text-white/70">
-              <div className="w-1.5 h-1.5 rounded-full bg-blue-400/60 flex-shrink-0" />
+            <div key={i} className="flex items-start gap-2.5 text-[13px] text-white/60">
+              <div className="w-1 h-1 rounded-full bg-blue-400/50 flex-shrink-0 mt-2" />
               {item}
             </div>
           ))}
@@ -235,34 +225,46 @@ export default function WeatherCard({
       </div>
 
       {/* Activities */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        {activities.good.length > 0 && (
-          <div className="card rounded-2xl p-5">
-            <p className="section-label mb-3 text-emerald-400/60">Recommended</p>
-            <div className="space-y-2.5">
-              {activities.good.map((item, i) => (
-                <div key={i} className="flex items-center gap-3 text-sm text-white/70">
-                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-400/60 flex-shrink-0" />
-                  {item}
+      {(activities.good.length > 0 || activities.bad.length > 0) && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {activities.good.length > 0 && (
+            <div className="card rounded-2xl p-5">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-4 h-4 rounded-full bg-emerald-500/20 flex items-center justify-center">
+                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                 </div>
-              ))}
+                <span className="section-label">Good For</span>
+              </div>
+              <div className="space-y-2">
+                {activities.good.map((item, i) => (
+                  <div key={i} className="flex items-start gap-2.5 text-[13px] text-white/60">
+                    <div className="w-1 h-1 rounded-full bg-emerald-400/50 flex-shrink-0 mt-2" />
+                    {item}
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
-        {activities.bad.length > 0 && (
-          <div className="card rounded-2xl p-5">
-            <p className="section-label mb-3 text-rose-400/60">Not Ideal</p>
-            <div className="space-y-2.5">
-              {activities.bad.map((item, i) => (
-                <div key={i} className="flex items-center gap-3 text-sm text-white/70">
-                  <div className="w-1.5 h-1.5 rounded-full bg-rose-400/60 flex-shrink-0" />
-                  {item}
+          )}
+          {activities.bad.length > 0 && (
+            <div className="card rounded-2xl p-5">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-4 h-4 rounded-full bg-rose-500/20 flex items-center justify-center">
+                  <div className="w-1.5 h-1.5 rounded-full bg-rose-400" />
                 </div>
-              ))}
+                <span className="section-label">Not Ideal</span>
+              </div>
+              <div className="space-y-2">
+                {activities.bad.map((item, i) => (
+                  <div key={i} className="flex items-start gap-2.5 text-[13px] text-white/60">
+                    <div className="w-1 h-1 rounded-full bg-rose-400/50 flex-shrink-0 mt-2" />
+                    {item}
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

@@ -9,11 +9,11 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "Weather Tomorrow — Tomorrow's Weather Forecast",
+    default: "Weather Tomorrow — Tomorrow's Weather Forecast for Any City",
     template: "%s | Weather Tomorrow",
   },
   description:
-    "Get tomorrow's weather forecast instantly. Simple, fast, beautiful. No clutter — just tomorrow's weather for any city in the world.",
+    "Get tomorrow's weather forecast instantly for any city in the world. Temperature, rain chance, hourly forecast, what to wear, and activity suggestions. Free, fast, updated hourly.",
   keywords: [
     "weather tomorrow",
     "tomorrow weather",
@@ -21,25 +21,34 @@ export const metadata: Metadata = {
     "weather forecast tomorrow",
     "will it rain tomorrow",
     "weather tomorrow near me",
+    "tomorrow temperature",
   ],
   metadataBase: new URL("https://weathertomorrow.app"),
+  icons: {
+    icon: "/favicon.svg",
+  },
   openGraph: {
-    title: "Weather Tomorrow — Tomorrow's Weather Forecast",
+    title: "Weather Tomorrow — Tomorrow's Forecast, Instantly",
     description:
-      "Get tomorrow's weather forecast instantly. Simple, fast, beautiful.",
+      "Get tomorrow's weather forecast for any city. Temperature, rain, wind, UV, hourly breakdown & what to wear.",
     url: "https://weathertomorrow.app",
     siteName: "Weather Tomorrow",
     type: "website",
+    images: ["/api/og/new-york"],
   },
   twitter: {
     card: "summary_large_image",
     title: "Weather Tomorrow",
     description:
-      "Get tomorrow's weather forecast instantly. Simple, fast, beautiful.",
+      "Tomorrow's weather forecast for any city. Fast, free, updated hourly.",
   },
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+    },
   },
   alternates: {
     canonical: "https://weathertomorrow.app",

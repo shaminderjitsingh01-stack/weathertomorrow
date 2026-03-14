@@ -1,47 +1,59 @@
 import Link from "next/link";
 
+function LogoIcon({ size = 24 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 32 32" fill="none">
+      {/* Sun behind cloud */}
+      <circle cx="22" cy="10" r="7" fill="#FBBF24" opacity="0.85" />
+      <circle cx="22" cy="10" r="5" fill="#FDE68A" opacity="0.5" />
+      {/* Cloud */}
+      <ellipse cx="15" cy="22" rx="11" ry="6.5" fill="white" opacity="0.9" />
+      <ellipse cx="10" cy="19" rx="7" ry="6" fill="white" opacity="0.85" />
+      <ellipse cx="20" cy="18.5" rx="6" ry="5" fill="white" opacity="0.8" />
+      <ellipse cx="14" cy="16.5" rx="5.5" ry="4.5" fill="white" opacity="0.95" />
+    </svg>
+  );
+}
+
 export default function Header({
   subtitle,
   isLanding = false,
+  lastUpdated,
 }: {
   subtitle?: string;
   isLanding?: boolean;
+  lastUpdated?: string;
 }) {
-  const Logo = () => (
-    <div className="flex items-center justify-center gap-2.5">
-      {/* Weather icon logo */}
-      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-        <circle cx="11" cy="11" r="5" fill="#FBBF24" opacity="0.9" />
-        <path
-          d="M8 19c0-4.418 3.582-8 8-8 2.761 0 5.193 1.399 6.633 3.527A5.5 5.5 0 0124 14.5 5.5 5.5 0 0124 25H8v-6z"
-          fill="white"
-          opacity="0.85"
-        />
-      </svg>
-      <span
-        className={`font-extrabold tracking-tight ${isLanding ? "text-3xl sm:text-4xl" : "text-xl"}`}
-      >
-        Weather Tomorrow
-      </span>
-    </div>
-  );
-
   return (
-    <header className={`text-center ${isLanding ? "mb-10 pt-16 pb-2" : "mb-6 pt-4"}`}>
+    <header className={`text-center ${isLanding ? "pt-20 pb-4 mb-8" : "pt-5 mb-5"}`}>
       {isLanding ? (
         <>
-          <Logo />
-          <p className="text-white/50 text-base mt-3 font-medium">
-            Tomorrow&apos;s forecast, instantly
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <LogoIcon size={36} />
+            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
+              Weather Tomorrow
+            </h1>
+          </div>
+          <p className="text-white/40 text-base font-medium">
+            Tomorrow&apos;s forecast for any city — instantly
           </p>
         </>
       ) : (
         <>
-          <Link href="/" className="inline-block hover:opacity-80 transition-opacity">
-            <Logo />
+          <Link href="/" className="inline-flex items-center gap-2 hover:opacity-80 transition-opacity">
+            <LogoIcon size={22} />
+            <span className="text-lg font-extrabold tracking-tight">Weather Tomorrow</span>
           </Link>
           {subtitle && (
-            <p className="text-white/40 text-sm mt-1.5 font-medium">{subtitle}</p>
+            <p className="text-white/35 text-sm mt-1 font-medium">{subtitle}</p>
+          )}
+          {lastUpdated && (
+            <div className="flex items-center justify-center gap-1.5 mt-2">
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="text-[10px] text-white/25 font-semibold uppercase tracking-wider">
+                Updated {lastUpdated}
+              </span>
+            </div>
           )}
         </>
       )}

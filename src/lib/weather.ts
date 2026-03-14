@@ -1,5 +1,4 @@
-// Weather API integration using Open-Meteo (free, no API key required)
-// https://open-meteo.com/
+// Weather API — Open-Meteo (free, no API key)
 
 export interface HourlyForecast {
   time: string;
@@ -33,22 +32,16 @@ export interface DailyForecast {
 }
 
 export interface WeatherData {
-  location: {
-    name: string;
-    country: string;
-    latitude: number;
-    longitude: number;
-    timezone: string;
-  };
+  today: DailyForecast;
   tomorrow: DailyForecast;
-  hourly: HourlyForecast[];
+  hourlyTomorrow: HourlyForecast[];
 }
 
 export async function getWeatherByCoords(
   lat: number,
   lon: number,
   timezone: string = "auto"
-): Promise<{ tomorrow: DailyForecast; hourly: HourlyForecast[] }> {
+): Promise<WeatherData> {
   const params = new URLSearchParams({
     latitude: lat.toString(),
     longitude: lon.toString(),
@@ -95,7 +88,6 @@ export async function getWeatherByCoords(
       break;
     }
 
-    // Rate limited — wait and retry
     if (res.status === 429 && attempt < 2) {
       await new Promise((r) => setTimeout(r, (attempt + 1) * 2000));
       continue;
@@ -108,27 +100,30 @@ export async function getWeatherByCoords(
     throw new Error("Weather API: failed after retries");
   }
 
-  // Tomorrow is index 1
-  const tomorrow: DailyForecast = {
-    date: data.daily.time[1],
-    temperatureMax: data.daily.temperature_2m_max[1],
-    temperatureMin: data.daily.temperature_2m_min[1],
-    apparentTemperatureMax: data.daily.apparent_temperature_max[1],
-    apparentTemperatureMin: data.daily.apparent_temperature_min[1],
-    sunrise: data.daily.sunrise[1],
-    sunset: data.daily.sunset[1],
-    precipitationSum: data.daily.precipitation_sum[1],
-    precipitationProbabilityMax: data.daily.precipitation_probability_max[1],
-    windSpeedMax: data.daily.wind_speed_10m_max[1],
-    windGustMax: data.daily.wind_gusts_10m_max[1],
-    weatherCode: data.daily.weather_code[1],
-    uvIndexMax: data.daily.uv_index_max[1],
-  };
+  const parseDailyIndex = (i: number): DailyForecast => ({
+    date: data.daily.time[i],
+    temperatureMax: data.daily.temperature_2m_max[i],
+    temperatureMin: data.daily.temperature_2m_min[i],
+    apparentTemperatureMax: data.daily.apparent_temperature_max[i],
+    apparentTemperatureMin: data.daily.apparent_temperature_min[i],
+    sunrise: data.daily.sunrise[i],
+    sunset: data.daily.sunset[i],
+    precipitationSum: data.daily.precipitation_sum[i],
+    precipitationProbabilityMax: data.daily.precipitation_probability_max[i],
+    windSpeedMax: data.daily.wind_speed_10m_max[i],
+    windGustMax: data.daily.wind_gusts_10m_max[i],
+    weatherCode: data.daily.weather_code[i],
+    uvIndexMax: data.daily.uv_index_max[i],
+  });
 
-  // Extract tomorrow's hourly data (hours 24-47)
-  const hourly: HourlyForecast[] = [];
+  // Today = index 0, Tomorrow = index 1
+  const today = parseDailyIndex(0);
+  const tomorrow = parseDailyIndex(1);
+
+  // Tomorrow's hourly data (hours 24-47)
+  const hourlyTomorrow: HourlyForecast[] = [];
   for (let i = 24; i < 48 && i < data.hourly.time.length; i++) {
-    hourly.push({
+    hourlyTomorrow.push({
       time: data.hourly.time[i],
       temperature: data.hourly.temperature_2m[i],
       apparentTemperature: data.hourly.apparent_temperature[i],
@@ -144,15 +139,15 @@ export async function getWeatherByCoords(
     });
   }
 
-  return { tomorrow, hourly };
+  return { today, tomorrow, hourlyTomorrow };
 }
 
-// Geocoding using Open-Meteo's geocoding API (also free)
+// Geocoding
 export interface GeoLocation {
   name: string;
   country: string;
   countryCode: string;
-  admin1?: string; // state/province
+  admin1?: string;
   latitude: number;
   longitude: number;
   population?: number;
@@ -162,7 +157,7 @@ export interface GeoLocation {
 export async function searchLocations(query: string): Promise<GeoLocation[]> {
   const res = await fetch(
     `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=8&language=en`,
-    { next: { revalidate: 86400 } } // Cache for 24 hours
+    { next: { revalidate: 86400 } }
   );
 
   if (!res.ok) return [];
@@ -186,8 +181,6 @@ export async function reverseGeocode(
   lat: number,
   lon: number
 ): Promise<string> {
-  // Use a simple reverse geocode via Open-Meteo geocoding
-  // We search nearby and find closest match
   const res = await fetch(
     `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&zoom=10`,
     {
@@ -208,8 +201,7 @@ export async function reverseGeocode(
   );
 }
 
-// WMO Weather interpretation codes
-// https://open-meteo.com/en/docs
+// WMO Weather codes
 export function getWeatherDescription(code: number): string {
   const descriptions: Record<number, string> = {
     0: "Clear sky",
@@ -244,17 +236,17 @@ export function getWeatherDescription(code: number): string {
   return descriptions[code] || "Unknown";
 }
 
-export function getWeatherEmoji(code: number, isDay: boolean = true): string {
-  if (code === 0) return isDay ? "☀️" : "🌙";
-  if (code <= 2) return isDay ? "⛅" : "☁️";
-  if (code === 3) return "☁️";
-  if (code <= 48) return "🌫️";
-  if (code <= 57) return "🌦️";
-  if (code <= 67) return "🌧️";
-  if (code <= 77) return "🌨️";
-  if (code <= 82) return "🌧️";
-  if (code <= 86) return "🌨️";
-  return "⛈️";
+export function getWeatherCondition(code: number): string {
+  if (code === 0) return "clear";
+  if (code <= 2) return "partly-cloudy";
+  if (code === 3) return "overcast";
+  if (code <= 48) return "fog";
+  if (code <= 57) return "drizzle";
+  if (code <= 67) return "rain";
+  if (code <= 77) return "snow";
+  if (code <= 82) return "rain";
+  if (code <= 86) return "snow";
+  return "thunderstorm";
 }
 
 export function getWeatherGradient(code: number): string {
@@ -263,7 +255,7 @@ export function getWeatherGradient(code: number): string {
   if (code <= 48) return "weather-cloudy";
   if (code <= 67) return "weather-rainy";
   if (code <= 86) return "weather-snowy";
-  return "weather-rainy"; // thunderstorm
+  return "weather-storm";
 }
 
 export function getWhatToWear(
@@ -274,33 +266,39 @@ export function getWhatToWear(
 ): string[] {
   const suggestions: string[] = [];
 
-  // Temperature-based
-  if (tempMax >= 30) {
-    suggestions.push("Light, breathable clothing");
-    suggestions.push("Sunscreen & sunglasses");
+  if (tempMax >= 35) {
+    suggestions.push("Lightweight, loose-fitting clothes in light colors");
+    suggestions.push("Apply SPF 50+ sunscreen before heading out");
+    suggestions.push("Wear a wide-brimmed hat and UV-blocking sunglasses");
+  } else if (tempMax >= 28) {
+    suggestions.push("Light cotton or linen clothing");
+    suggestions.push("Sunglasses and sunscreen recommended");
+    if (tempMin < 22) suggestions.push("Bring a light layer for the evening");
   } else if (tempMax >= 20) {
-    suggestions.push("T-shirt and light layers");
-  } else if (tempMax >= 10) {
-    suggestions.push("Jacket or sweater");
-    if (tempMin < 5) suggestions.push("Warm layers underneath");
-  } else if (tempMax >= 0) {
-    suggestions.push("Heavy coat and warm layers");
-    suggestions.push("Gloves and hat");
+    suggestions.push("Comfortable layers — t-shirt with a light jacket");
+    if (tempMin < 14) suggestions.push("You'll want a warmer layer by evening");
+  } else if (tempMax >= 12) {
+    suggestions.push("A proper jacket or fleece — it'll be cool");
+    if (tempMin < 6) suggestions.push("Layer up with thermals underneath");
+    suggestions.push("Closed-toe shoes recommended");
+  } else if (tempMax >= 4) {
+    suggestions.push("Heavy coat, scarf, and gloves are essential");
+    suggestions.push("Wear insulating layers underneath");
+    suggestions.push("Warm, waterproof boots");
   } else {
-    suggestions.push("Heavy winter coat");
-    suggestions.push("Thermal layers, gloves, scarf, hat");
+    suggestions.push("Full winter gear — heavy insulated coat, hat, gloves, scarf");
+    suggestions.push("Thermal base layers are a must");
+    suggestions.push("Insulated, waterproof boots with good traction");
   }
 
-  // Rain-based
-  if (rainChance >= 60) {
-    suggestions.push("Umbrella — rain is likely");
-  } else if (rainChance >= 30) {
-    suggestions.push("Consider an umbrella, just in case");
+  if (rainChance >= 70) {
+    suggestions.push("Definitely bring an umbrella — rain is very likely");
+  } else if (rainChance >= 40) {
+    suggestions.push("Pack an umbrella just in case — decent chance of rain");
   }
 
-  // Snow
   if (weatherCode >= 71 && weatherCode <= 86) {
-    suggestions.push("Waterproof boots");
+    suggestions.push("Waterproof outer layer and boots with grip for snow");
   }
 
   return suggestions;
@@ -318,56 +316,70 @@ export function getActivitySuggestions(
   const isSunny = weatherCode <= 2;
   const isRainy = rainChance >= 50;
   const isSnowy = weatherCode >= 71 && weatherCode <= 86;
-  const isComfortable = tempMax >= 15 && tempMax <= 30;
+  const isComfortable = tempMax >= 16 && tempMax <= 28;
 
   if (isSunny && isComfortable) {
-    good.push("Outdoor dining", "Running", "Cycling", "Picnic");
-    bad.push("Indoor activities (enjoy the weather!)");
-  } else if (isSunny && tempMax > 30) {
-    good.push("Swimming", "Water activities", "Early morning walk");
-    bad.push("Midday outdoor exercise", "Extended sun exposure");
+    good.push("Outdoor dining and picnics", "Running, cycling, or hiking", "Sightseeing and walking tours", "Parks and outdoor markets");
+    bad.push("You'd be missing out staying indoors");
+  } else if (isSunny && tempMax > 28) {
+    good.push("Swimming and water sports", "Early morning or evening walks", "Air-conditioned museums and malls");
+    bad.push("Midday outdoor exercise — heat risk", "Extended direct sun exposure");
   } else if (isRainy) {
-    good.push("Museums", "Cafés", "Indoor workout", "Reading");
-    bad.push("Hiking", "Beach", "Outdoor sports");
+    good.push("Museums and art galleries", "Indoor markets and cafés", "Cinema or theatre", "Indoor fitness and yoga");
+    bad.push("Hiking and trail running", "Outdoor dining", "Beach activities");
   } else if (isSnowy) {
-    good.push("Skiing", "Snowboarding", "Cozy indoor activities");
-    bad.push("Driving long distances", "Cycling");
-  } else if (tempMax < 5) {
-    good.push("Indoor workout", "Hot drinks", "Movies");
-    bad.push("Extended outdoor activities");
+    good.push("Skiing and snowboarding", "Building a snowman", "Cozy café or bookshop visit");
+    bad.push("Long-distance driving", "Outdoor cycling");
+  } else if (tempMax < 6) {
+    good.push("Indoor attractions and museums", "Hot springs or indoor pools", "Warm cafés and restaurants");
+    bad.push("Extended outdoor plans without proper gear");
   } else {
-    good.push("Walking", "Sightseeing", "Light outdoor activities");
+    good.push("Walking and light sightseeing", "Outdoor markets", "Light outdoor exercise");
   }
 
   if (uvIndex >= 8) {
-    bad.push("Prolonged sun exposure without SPF 50+");
+    bad.push("Prolonged sun exposure without strong sunscreen");
   }
 
   return { good: good.slice(0, 4), bad: bad.slice(0, 3) };
 }
 
 export function generateSummary(
+  today: DailyForecast,
   tomorrow: DailyForecast,
   cityName: string
 ): string {
   const desc = getWeatherDescription(tomorrow.weatherCode).toLowerCase();
   const tempMax = Math.round(tomorrow.temperatureMax);
   const tempMin = Math.round(tomorrow.temperatureMin);
+  const todayMax = Math.round(today.temperatureMax);
+  const diff = tempMax - todayMax;
 
-  let summary = `Tomorrow in ${cityName}: ${desc} with a high of ${tempMax}°C and a low of ${tempMin}°C.`;
+  let summary = "";
 
-  if (tomorrow.precipitationProbabilityMax >= 60) {
-    summary += ` There's a ${tomorrow.precipitationProbabilityMax}% chance of rain — bring an umbrella.`;
-  } else if (tomorrow.precipitationProbabilityMax >= 30) {
-    summary += ` There's a small chance of rain (${tomorrow.precipitationProbabilityMax}%), so you might want to carry an umbrella.`;
+  // Temperature comparison with today
+  if (Math.abs(diff) <= 1) {
+    summary = `Tomorrow in ${cityName} will be similar to today — ${desc} with a high of ${tempMax}°C and a low of ${tempMin}°C.`;
+  } else if (diff > 0) {
+    summary = `Tomorrow in ${cityName} will be ${diff >= 5 ? "significantly " : ""}warmer than today — ${desc} with a high of ${tempMax}°C (${diff > 0 ? "+" : ""}${diff}° from today) and a low of ${tempMin}°C.`;
+  } else {
+    summary = `Tomorrow in ${cityName} will be ${diff <= -5 ? "noticeably " : ""}cooler than today — ${desc} with a high of ${tempMax}°C (${diff}° from today) and a low of ${tempMin}°C.`;
   }
 
-  if (tomorrow.windSpeedMax > 40) {
-    summary += ` Expect strong winds up to ${Math.round(tomorrow.windSpeedMax)} km/h.`;
+  if (tomorrow.precipitationProbabilityMax >= 70) {
+    summary += ` Rain is very likely (${tomorrow.precipitationProbabilityMax}% chance) — plan accordingly and bring an umbrella.`;
+  } else if (tomorrow.precipitationProbabilityMax >= 40) {
+    summary += ` There's a reasonable chance of rain (${tomorrow.precipitationProbabilityMax}%), so an umbrella wouldn't hurt.`;
+  }
+
+  if (tomorrow.windSpeedMax > 50) {
+    summary += ` Strong winds expected, up to ${Math.round(tomorrow.windSpeedMax)} km/h — be careful with loose items.`;
+  } else if (tomorrow.windSpeedMax > 35) {
+    summary += ` It'll be breezy, with winds reaching ${Math.round(tomorrow.windSpeedMax)} km/h.`;
   }
 
   if (tomorrow.uvIndexMax >= 8) {
-    summary += ` UV index is very high (${tomorrow.uvIndexMax}) — wear sunscreen.`;
+    summary += ` The UV index will be very high (${tomorrow.uvIndexMax}) — sunscreen and shade are important.`;
   }
 
   return summary;
