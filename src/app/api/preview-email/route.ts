@@ -5,9 +5,10 @@ import { searchLocations } from "@/lib/weather";
 import { generateWeatherEmailHtml, generateSubjectLine } from "@/lib/email-template";
 
 // Preview the newsletter email for any city
-// Usage: /api/preview-email?city=singapore
+// Usage: /api/preview-email?city=singapore&type=today
 export async function GET(request: NextRequest) {
   const citySlug = request.nextUrl.searchParams.get("city") || "new-york";
+  const forecastType = (request.nextUrl.searchParams.get("type") || "tomorrow") as "today" | "tomorrow";
 
   // Resolve city
   let cityName = "New York";
@@ -42,12 +43,15 @@ export async function GET(request: NextRequest) {
     country,
     weather.today,
     weather.tomorrow,
-    weather.tomorrow.date
+    forecastType
   );
 
-  const subject = generateSubjectLine(cityName, weather.tomorrow);
+  const primaryDay = forecastType === "today" ? weather.today : weather.tomorrow;
+  const subject = generateSubjectLine(cityName, primaryDay, forecastType);
 
-  // Wrap in a full HTML page with email-like preview styling
+  const otherType = forecastType === "today" ? "tomorrow" : "today";
+  const toggleLabel = forecastType === "today" ? "Tomorrow's version" : "Today's version";
+
   const previewHtml = `<!DOCTYPE html>
 <html>
 <head>
@@ -77,6 +81,36 @@ export async function GET(request: NextRequest) {
       font-weight: 700;
       margin-top: 8px;
     }
+    .toggle-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 16px 24px;
+      background: #12122a;
+    }
+    .toggle-btn {
+      padding: 8px 20px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .toggle-btn.active {
+      background: rgba(99, 102, 241, 0.2);
+      color: #a5b4fc;
+      border: 1px solid rgba(99, 102, 241, 0.3);
+    }
+    .toggle-btn.inactive {
+      background: rgba(255, 255, 255, 0.05);
+      color: #555;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .toggle-btn.inactive:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #888;
+    }
     .email-container {
       max-width: 520px;
       margin: 32px auto;
@@ -93,6 +127,7 @@ export async function GET(request: NextRequest) {
       padding: 24px;
       color: #555;
       font-size: 12px;
+      line-height: 2;
     }
     .preview-footer a {
       color: #6366f1;
@@ -114,24 +149,31 @@ export async function GET(request: NextRequest) {
 </head>
 <body>
   <div class="preview-header">
-    <div class="badge">Email Preview</div>
+    <div class="badge">Email Preview — ${forecastType === "today" ? "Today's Weather" : "Tomorrow's Weather"}</div>
     <div><strong>From:</strong> Weather Tomorrow &lt;hello@weathertomorrow.app&gt;</div>
     <div><strong>To:</strong> subscriber@example.com</div>
     <div class="preview-subject">${subject}</div>
   </div>
+
+  <div class="toggle-bar">
+    <a href="/api/preview-email?city=${citySlug}&type=today" class="toggle-btn ${forecastType === "today" ? "active" : "inactive"}">Today's Email</a>
+    <a href="/api/preview-email?city=${citySlug}&type=tomorrow" class="toggle-btn ${forecastType === "tomorrow" ? "active" : "inactive"}">Tomorrow's Email</a>
+  </div>
+
   <div class="email-container">
     <div class="email-body">
       ${html}
     </div>
   </div>
+
   <div class="preview-footer">
-    This is a preview. Try other cities:
-    <a href="/api/preview-email?city=london">London</a> ·
-    <a href="/api/preview-email?city=tokyo">Tokyo</a> ·
-    <a href="/api/preview-email?city=dubai">Dubai</a> ·
-    <a href="/api/preview-email?city=singapore">Singapore</a> ·
-    <a href="/api/preview-email?city=mumbai">Mumbai</a> ·
-    <a href="/api/preview-email?city=sydney">Sydney</a>
+    Try other cities:
+    <a href="/api/preview-email?city=london&type=${forecastType}">London</a> ·
+    <a href="/api/preview-email?city=tokyo&type=${forecastType}">Tokyo</a> ·
+    <a href="/api/preview-email?city=dubai&type=${forecastType}">Dubai</a> ·
+    <a href="/api/preview-email?city=singapore&type=${forecastType}">Singapore</a> ·
+    <a href="/api/preview-email?city=mumbai&type=${forecastType}">Mumbai</a> ·
+    <a href="/api/preview-email?city=sydney&type=${forecastType}">Sydney</a>
   </div>
 </body>
 </html>`;

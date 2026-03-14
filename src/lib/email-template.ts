@@ -1,46 +1,54 @@
 import { DailyForecast, getWeatherDescription, getWhatToWear, getActivitySuggestions } from "./weather";
 
 // Generate weather digest HTML for email
+// forecastType: "today" shows today's weather, "tomorrow" shows tomorrow's
 export function generateWeatherEmailHtml(
   cityName: string,
   country: string,
   today: DailyForecast,
   tomorrow: DailyForecast,
-  tomorrowDate: string
+  forecastType: "today" | "tomorrow" = "tomorrow"
 ): string {
-  const description = getWeatherDescription(tomorrow.weatherCode);
-  const tempMax = Math.round(tomorrow.temperatureMax);
-  const tempMin = Math.round(tomorrow.temperatureMin);
-  const todayMax = Math.round(today.temperatureMax);
-  const diff = tempMax - todayMax;
+  const isToday = forecastType === "today";
+  const primary = isToday ? today : tomorrow;
+  const compare = isToday ? tomorrow : today;
+  const dayLabel = isToday ? "Today" : "Tomorrow";
+  const compareLabel = isToday ? "tomorrow" : "today";
+  const headerLabel = isToday ? "Weather Today" : "Weather Tomorrow";
+
+  const description = getWeatherDescription(primary.weatherCode);
+  const tempMax = Math.round(primary.temperatureMax);
+  const tempMin = Math.round(primary.temperatureMin);
+  const compareMax = Math.round(compare.temperatureMax);
+  const diff = tempMax - compareMax;
 
   const whatToWear = getWhatToWear(
-    tomorrow.temperatureMax,
-    tomorrow.temperatureMin,
-    tomorrow.precipitationProbabilityMax,
-    tomorrow.weatherCode
+    primary.temperatureMax,
+    primary.temperatureMin,
+    primary.precipitationProbabilityMax,
+    primary.weatherCode
   );
 
   const activities = getActivitySuggestions(
-    tomorrow.temperatureMax,
-    tomorrow.precipitationProbabilityMax,
-    tomorrow.weatherCode,
-    tomorrow.uvIndexMax
+    primary.temperatureMax,
+    primary.precipitationProbabilityMax,
+    primary.weatherCode,
+    primary.uvIndexMax
   );
 
-  const sunrise = new Date(tomorrow.sunrise).toLocaleTimeString("en-US", {
+  const sunrise = new Date(primary.sunrise).toLocaleTimeString("en-US", {
     hour: "numeric",
     minute: "2-digit",
     hour12: true,
   });
 
-  const sunset = new Date(tomorrow.sunset).toLocaleTimeString("en-US", {
+  const sunset = new Date(primary.sunset).toLocaleTimeString("en-US", {
     hour: "numeric",
     minute: "2-digit",
     hour12: true,
   });
 
-  const formattedDate = new Date(tomorrowDate + "T00:00:00").toLocaleDateString("en-US", {
+  const formattedDate = new Date(primary.date + "T00:00:00").toLocaleDateString("en-US", {
     weekday: "long",
     month: "long",
     day: "numeric",
@@ -49,12 +57,14 @@ export function generateWeatherEmailHtml(
 
   const diffText =
     Math.abs(diff) <= 1
-      ? "Same as today"
+      ? `Same as ${compareLabel}`
       : diff > 0
-        ? `${diff}° warmer than today`
-        : `${Math.abs(diff)}° cooler than today`;
+        ? `${diff}° warmer than ${compareLabel}`
+        : `${Math.abs(diff)}° cooler than ${compareLabel}`;
 
-  const emoji = getWeatherEmoji(tomorrow.weatherCode);
+  const emoji = getWeatherEmoji(primary.weatherCode);
+  const accentColor = isToday ? "#0891b2" : "#1d4ed8";
+  const activitiesLabel = isToday ? `Good For ${dayLabel}` : `Good For ${dayLabel}`;
 
   return `
 <div style="max-width:480px;margin:0 auto;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#1a1a2e;line-height:1.6;">
@@ -62,14 +72,14 @@ export function generateWeatherEmailHtml(
   <!-- Header -->
   <div style="text-align:center;padding:24px 0 8px;">
     <div style="font-size:13px;color:#888;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;">
-      Weather Tomorrow &middot; ${cityName}
+      ${headerLabel} &middot; ${cityName}
     </div>
     <div style="font-size:12px;color:#aaa;margin-top:4px;">
       ${formattedDate}
     </div>
   </div>
 
-  <div style="height:1px;background:linear-gradient(90deg,transparent,#e0e0e0,transparent);margin:0 24px;" ></div>
+  <div style="height:1px;background:linear-gradient(90deg,transparent,#e0e0e0,transparent);margin:0 24px;"></div>
 
   <!-- Main Weather -->
   <div style="text-align:center;padding:28px 24px 20px;">
@@ -81,7 +91,21 @@ export function generateWeatherEmailHtml(
       ${description}
     </div>
     <div style="font-size:13px;color:#888;margin-top:6px;">
-      Feels like ${Math.round(tomorrow.apparentTemperatureMax)}° / ${Math.round(tomorrow.apparentTemperatureMin)}° &middot; ${diffText}
+      Feels like ${Math.round(primary.apparentTemperatureMax)}° / ${Math.round(primary.apparentTemperatureMin)}° &middot; ${diffText}
+    </div>
+  </div>
+
+  <!-- Compare box -->
+  <div style="padding:0 24px 20px;">
+    <div style="background:#f0f4ff;border-radius:12px;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;">
+      <div>
+        <div style="font-size:11px;color:#888;font-weight:600;text-transform:uppercase;">${compareLabel.toUpperCase()}</div>
+        <div style="font-size:16px;font-weight:700;color:#1a1a2e;">${compareMax}° / ${Math.round(compare.temperatureMin)}°</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:11px;color:#888;font-weight:600;">${getWeatherDescription(compare.weatherCode)}</div>
+        <div style="font-size:13px;color:#888;">Rain: ${compare.precipitationProbabilityMax}%</div>
+      </div>
     </div>
   </div>
 
@@ -89,15 +113,15 @@ export function generateWeatherEmailHtml(
   <div style="display:flex;justify-content:space-between;padding:0 24px 20px;gap:8px;">
     <div style="flex:1;background:#f5f7fa;border-radius:12px;padding:14px;text-align:center;">
       <div style="font-size:11px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Rain</div>
-      <div style="font-size:22px;font-weight:800;color:#1a1a2e;margin-top:4px;">${tomorrow.precipitationProbabilityMax}%</div>
+      <div style="font-size:22px;font-weight:800;color:#1a1a2e;margin-top:4px;">${primary.precipitationProbabilityMax}%</div>
     </div>
     <div style="flex:1;background:#f5f7fa;border-radius:12px;padding:14px;text-align:center;">
       <div style="font-size:11px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Wind</div>
-      <div style="font-size:22px;font-weight:800;color:#1a1a2e;margin-top:4px;">${Math.round(tomorrow.windSpeedMax)}<span style="font-size:12px;color:#888;"> km/h</span></div>
+      <div style="font-size:22px;font-weight:800;color:#1a1a2e;margin-top:4px;">${Math.round(primary.windSpeedMax)}<span style="font-size:12px;color:#888;"> km/h</span></div>
     </div>
     <div style="flex:1;background:#f5f7fa;border-radius:12px;padding:14px;text-align:center;">
       <div style="font-size:11px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">UV</div>
-      <div style="font-size:22px;font-weight:800;color:#1a1a2e;margin-top:4px;">${tomorrow.uvIndexMax}</div>
+      <div style="font-size:22px;font-weight:800;color:#1a1a2e;margin-top:4px;">${primary.uvIndexMax}</div>
     </div>
   </div>
 
@@ -118,12 +142,12 @@ export function generateWeatherEmailHtml(
 
   <!-- What to Wear -->
   <div style="padding:0 24px 20px;">
-    <div style="font-size:12px;color:#888;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">What to Wear</div>
+    <div style="font-size:12px;color:#888;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">What to Wear ${dayLabel}</div>
     ${whatToWear
       .map(
         (item) =>
           `<div style="font-size:14px;color:#444;padding:4px 0;display:flex;align-items:flex-start;gap:8px;">
-            <span style="color:#3b82f6;font-size:8px;margin-top:6px;">●</span>
+            <span style="color:${accentColor};font-size:8px;margin-top:6px;">●</span>
             ${item}
           </div>`
       )
@@ -135,7 +159,7 @@ export function generateWeatherEmailHtml(
     activities.good.length > 0
       ? `
   <div style="padding:0 24px 20px;">
-    <div style="font-size:12px;color:#888;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">Good For Tomorrow</div>
+    <div style="font-size:12px;color:#888;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">${activitiesLabel}</div>
     ${activities.good
       .map(
         (item) =>
@@ -152,7 +176,7 @@ export function generateWeatherEmailHtml(
   <!-- CTA -->
   <div style="padding:0 24px 24px;text-align:center;">
     <a href="https://weathertomorrow.app/${cityName.toLowerCase().replace(/\s+/g, "-")}"
-       style="display:inline-block;background:#1d4ed8;color:white;padding:12px 28px;border-radius:10px;text-decoration:none;font-size:14px;font-weight:700;">
+       style="display:inline-block;background:${accentColor};color:white;padding:12px 28px;border-radius:10px;text-decoration:none;font-size:14px;font-weight:700;">
       View Full Forecast
     </a>
   </div>
@@ -183,26 +207,29 @@ function getWeatherEmoji(code: number): string {
 // Generate email subject line
 export function generateSubjectLine(
   cityName: string,
-  tomorrow: DailyForecast
+  day: DailyForecast,
+  forecastType: "today" | "tomorrow" = "tomorrow"
 ): string {
-  const tempMax = Math.round(tomorrow.temperatureMax);
-  const desc = getWeatherDescription(tomorrow.weatherCode);
+  const tempMax = Math.round(day.temperatureMax);
+  const desc = getWeatherDescription(day.weatherCode);
+  const label = forecastType === "today" ? "today" : "tomorrow";
 
-  if (tomorrow.precipitationProbabilityMax >= 70) {
-    return `🌧️ Rain likely tomorrow in ${cityName} — ${tempMax}°C`;
+  if (day.precipitationProbabilityMax >= 70) {
+    return `🌧️ Rain likely ${label} in ${cityName} — ${tempMax}°C`;
   }
 
-  if (tomorrow.weatherCode >= 95) {
-    return `⛈️ Thunderstorm warning for ${cityName} tomorrow`;
+  if (day.weatherCode >= 95) {
+    return `⛈️ Thunderstorm warning for ${cityName} ${label}`;
   }
 
-  if (tomorrow.weatherCode >= 71 && tomorrow.weatherCode <= 86) {
-    return `🌨️ Snow expected tomorrow in ${cityName} — ${tempMax}°C`;
+  if (day.weatherCode >= 71 && day.weatherCode <= 86) {
+    return `🌨️ Snow expected ${label} in ${cityName} — ${tempMax}°C`;
   }
 
-  if (tomorrow.uvIndexMax >= 8) {
-    return `☀️ High UV tomorrow in ${cityName} — ${tempMax}°C, ${desc.toLowerCase()}`;
+  if (day.uvIndexMax >= 8) {
+    return `☀️ High UV ${label} in ${cityName} — ${tempMax}°C, ${desc.toLowerCase()}`;
   }
 
-  return `${getWeatherEmoji(tomorrow.weatherCode)} Tomorrow in ${cityName}: ${tempMax}°C, ${desc.toLowerCase()}`;
+  const prefix = forecastType === "today" ? "Today" : "Tomorrow";
+  return `${getWeatherEmoji(day.weatherCode)} ${prefix} in ${cityName}: ${tempMax}°C, ${desc.toLowerCase()}`;
 }

@@ -76,16 +76,16 @@ export async function GET(request: NextRequest) {
         // Fetch weather
         const weather = await getWeatherByCoords(lat, lon, tz);
 
-        // Generate email
+        // Generate email (TODO: respect per-subscriber forecastType preference)
         const html = generateWeatherEmailHtml(
           cityName,
           country,
           weather.today,
           weather.tomorrow,
-          weather.tomorrow.date
+          "tomorrow"
         );
 
-        const subject = generateSubjectLine(cityName, weather.tomorrow);
+        const subject = generateSubjectLine(cityName, weather.tomorrow, "tomorrow");
 
         // Send via Beehiiv
         const result = await createAndSendPost(
