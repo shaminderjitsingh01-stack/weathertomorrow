@@ -254,6 +254,8 @@ export function getWeatherGradient(code: number): string {
   if (code <= 3) return "weather-cloudy";
   if (code <= 48) return "weather-cloudy";
   if (code <= 67) return "weather-rainy";
+  if (code <= 77) return "weather-snowy";
+  if (code <= 82) return "weather-rainy";
   if (code <= 86) return "weather-snowy";
   return "weather-storm";
 }
@@ -297,7 +299,7 @@ export function getWhatToWear(
     suggestions.push("Pack an umbrella just in case — decent chance of rain");
   }
 
-  if (weatherCode >= 71 && weatherCode <= 86) {
+  if ((weatherCode >= 71 && weatherCode <= 77) || (weatherCode >= 85 && weatherCode <= 86)) {
     suggestions.push("Waterproof outer layer and boots with grip for snow");
   }
 
@@ -315,7 +317,7 @@ export function getActivitySuggestions(
 
   const isSunny = weatherCode <= 2;
   const isRainy = rainChance >= 50;
-  const isSnowy = weatherCode >= 71 && weatherCode <= 86;
+  const isSnowy = (weatherCode >= 71 && weatherCode <= 77) || (weatherCode >= 85 && weatherCode <= 86);
   const isComfortable = tempMax >= 16 && tempMax <= 28;
 
   if (isSunny && isComfortable) {

@@ -250,7 +250,7 @@ export function generateSubjectLine(
     return `⛈️ Thunderstorm warning for ${cityName} ${label}`;
   }
 
-  if (day.weatherCode >= 71 && day.weatherCode <= 86) {
+  if ((day.weatherCode >= 71 && day.weatherCode <= 77) || (day.weatherCode >= 85 && day.weatherCode <= 86)) {
     return `🌨️ Snow expected ${label} in ${cityName} — ${tempMax}°C`;
   }
 
