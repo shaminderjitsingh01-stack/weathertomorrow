@@ -11,6 +11,9 @@ export default function Footer() {
         <Link href="/privacy" className="hover:text-white/40 transition-colors">
           Privacy
         </Link>
+        <Link href="/login" className="hover:text-white/40 transition-colors">
+          My Subscription
+        </Link>
       </div>
       <p className="text-[10px] text-white/10 text-center">
         &copy; {new Date().getFullYear()} weathertomorrow.app &middot; Powered by Open-Meteo
