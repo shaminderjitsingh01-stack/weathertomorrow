@@ -201,12 +201,19 @@ export function generateWeatherEmailHtml(
     </div>
   </div>
 
+  <!-- Preferences -->
+  ${preferencesUrl ? `
+  <div style="padding:0 24px 20px;text-align:center;">
+    <a href="${preferencesUrl}" style="display:inline-block;background:#f5f7fa;color:#444;padding:10px 24px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:600;border:1px solid #e2e8f0;">
+      Change city, time, or forecast type
+    </a>
+  </div>` : ""}
+
   <!-- Footer -->
   <div style="text-align:center;padding:16px 24px;border-top:1px solid #eee;">
     <div style="font-size:11px;color:#bbb;">
       weathertomorrow.app &middot; ${cityName}, ${country}
     </div>
-    ${preferencesUrl ? `<div style="margin-top:8px;"><a href="${preferencesUrl}" style="font-size:11px;color:#999;text-decoration:underline;">Manage preferences</a></div>` : ""}
   </div>
 
 </div>`;
