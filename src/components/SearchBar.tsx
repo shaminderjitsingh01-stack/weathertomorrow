@@ -60,13 +60,9 @@ export default function SearchBar() {
   }, [query]);
 
   function handleSelect(result: SearchResult) {
-    if (result.slug) {
-      router.push(`/${result.slug}`);
-    } else {
-      router.push(
-        `/?lat=${result.latitude}&lon=${result.longitude}&name=${encodeURIComponent(result.name)}`
-      );
-    }
+    // Always use a slug URL so every search creates a proper, shareable page
+    const slug = result.slug || result.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+    router.push(`/${slug}`);
     setQuery("");
     setIsOpen(false);
   }
