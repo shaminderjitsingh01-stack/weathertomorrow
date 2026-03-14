@@ -52,11 +52,11 @@ async function WeatherDisplay({
         />
 
         <div className="mt-3">
-          <HourlyForecast hours={weather.hourlyTomorrow} />
+          <SubscribeForm cityName={cityName} timezone="auto" />
         </div>
 
         <div className="mt-3">
-          <SubscribeForm cityName={cityName} timezone="auto" />
+          <HourlyForecast hours={weather.hourlyTomorrow} />
         </div>
 
         <Footer />

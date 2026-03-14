@@ -192,13 +192,13 @@ export default async function CityPage({
           cityName={city.name}
         />
 
-        <div className="mt-3">
-          <HourlyForecast hours={weather.hourlyTomorrow} />
-        </div>
-
-        {/* Newsletter subscribe */}
+        {/* Newsletter subscribe — right after weather card, peak engagement */}
         <div className="mt-3">
           <SubscribeForm cityName={city.name} timezone={city.timezone} />
+        </div>
+
+        <div className="mt-3">
+          <HourlyForecast hours={weather.hourlyTomorrow} />
         </div>
 
         {/* Nearby cities — internal linking for SEO */}
