@@ -43,7 +43,8 @@ export async function GET(request: NextRequest) {
     country,
     weather.today,
     weather.tomorrow,
-    forecastType
+    forecastType,
+    "https://weathertomorrow.app/preferences?email=demo@example.com&token=preview"
   );
 
   const primaryDay = forecastType === "today" ? weather.today : weather.tomorrow;

@@ -2,12 +2,14 @@ import { DailyForecast, getWeatherDescription, getWhatToWear, getActivitySuggest
 
 // Generate weather digest HTML for email
 // forecastType: "today" shows today's weather, "tomorrow" shows tomorrow's
+// preferencesUrl: optional link to subscriber preferences page
 export function generateWeatherEmailHtml(
   cityName: string,
   country: string,
   today: DailyForecast,
   tomorrow: DailyForecast,
-  forecastType: "today" | "tomorrow" = "tomorrow"
+  forecastType: "today" | "tomorrow" = "tomorrow",
+  preferencesUrl?: string
 ): string {
   const isToday = forecastType === "today";
   const primary = isToday ? today : tomorrow;
@@ -181,11 +183,30 @@ export function generateWeatherEmailHtml(
     </a>
   </div>
 
+  <!-- Share with friends -->
+  <div style="padding:0 24px 20px;">
+    <div style="background:#f5f7fa;border-radius:12px;padding:16px 18px;text-align:center;">
+      <div style="font-size:12px;color:#888;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">Share with Friends</div>
+      <div style="font-size:13px;color:#666;margin-bottom:12px;">Know someone in ${cityName}? Share the forecast!</div>
+      <div>
+        <a href="https://wa.me/?text=${encodeURIComponent(`${headerLabel} in ${cityName}: ${tempMax}\u00B0C, ${description.toLowerCase()}.\nhttps://weathertomorrow.app/${cityName.toLowerCase().replace(/\s+/g, "-")}`)}"
+           style="display:inline-block;background:#25D366;color:white;padding:8px 16px;border-radius:8px;text-decoration:none;font-size:12px;font-weight:700;margin:0 4px;">
+          WhatsApp
+        </a>
+        <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent(`${headerLabel} in ${cityName}: ${tempMax}\u00B0C, ${description.toLowerCase()}`)}&url=${encodeURIComponent(`https://weathertomorrow.app/${cityName.toLowerCase().replace(/\s+/g, "-")}`)}"
+           style="display:inline-block;background:#1a1a2e;color:white;padding:8px 16px;border-radius:8px;text-decoration:none;font-size:12px;font-weight:700;margin:0 4px;">
+          Post on X
+        </a>
+      </div>
+    </div>
+  </div>
+
   <!-- Footer -->
   <div style="text-align:center;padding:16px 24px;border-top:1px solid #eee;">
     <div style="font-size:11px;color:#bbb;">
       weathertomorrow.app &middot; ${cityName}, ${country}
     </div>
+    ${preferencesUrl ? `<div style="margin-top:8px;"><a href="${preferencesUrl}" style="font-size:11px;color:#999;text-decoration:underline;">Manage preferences</a></div>` : ""}
   </div>
 
 </div>`;

@@ -101,6 +101,59 @@ export async function getAllSubscribers(): Promise<BeehiivSubscriber[]> {
   return all;
 }
 
+// Get a subscriber by email
+export async function getSubscriberByEmail(
+  email: string
+): Promise<BeehiivSubscriber | null> {
+  const pubId = getPublicationId();
+
+  const res = await fetch(
+    `${BEEHIIV_API_URL}/publications/${pubId}/subscriptions?email=${encodeURIComponent(email)}`,
+    { headers: getHeaders() }
+  );
+
+  if (!res.ok) {
+    console.error("Beehiiv lookup error:", await res.text());
+    return null;
+  }
+
+  const data = await res.json();
+  const subscribers = data.data || [];
+
+  if (subscribers.length === 0) return null;
+  return subscribers[0];
+}
+
+// Update a subscriber's custom fields
+export async function updateSubscriberCustomFields(
+  subscriberId: string,
+  fields: Record<string, string>
+): Promise<{ success: boolean; error?: string }> {
+  const pubId = getPublicationId();
+
+  const customFields = Object.entries(fields).map(([name, value]) => ({
+    name,
+    value,
+  }));
+
+  const res = await fetch(
+    `${BEEHIIV_API_URL}/publications/${pubId}/subscriptions/${subscriberId}`,
+    {
+      method: "PATCH",
+      headers: getHeaders(),
+      body: JSON.stringify({ custom_fields: customFields }),
+    }
+  );
+
+  if (!res.ok) {
+    const error = await res.text();
+    console.error("Beehiiv update error:", error);
+    return { success: false, error: "Failed to update preferences." };
+  }
+
+  return { success: true };
+}
+
 // ===== Posts =====
 
 export async function createAndSendPost(

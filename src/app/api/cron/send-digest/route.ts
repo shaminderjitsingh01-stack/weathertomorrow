@@ -7,6 +7,7 @@ import { getWeatherByCoords, searchLocations } from "@/lib/weather";
 import { getCityBySlug } from "@/lib/cities";
 import { generateWeatherEmailHtml, generateSubjectLine } from "@/lib/email-template";
 import { sendWeatherEmail } from "@/lib/resend";
+import { getPreferencesUrl } from "@/lib/tokens";
 
 export const maxDuration = 300; // 5 min timeout for Vercel Pro
 
@@ -107,13 +108,17 @@ export async function GET(request: NextRequest) {
       }
 
       try {
+        // Generate preferences URL for this subscriber
+        const preferencesUrl = getPreferencesUrl(sub.email);
+
         // Generate personalized email for this subscriber
         const html = generateWeatherEmailHtml(
           cityWeather.cityName,
           cityWeather.country,
           cityWeather.today,
           cityWeather.tomorrow,
-          forecastType
+          forecastType,
+          preferencesUrl
         );
 
         const primaryDay = forecastType === "today" ? cityWeather.today : cityWeather.tomorrow;

@@ -12,6 +12,7 @@ import WeatherTicker from "@/components/WeatherTicker";
 import { getWeatherByCoords, getWeatherGradient, getWeatherDescription, searchLocations } from "@/lib/weather";
 import { getCityBySlug, getCityLabel, slugToQuery, CityData } from "@/lib/cities";
 import SubscribeForm from "@/components/SubscribeForm";
+import ShareButton from "@/components/ShareButton";
 import { generateWeatherJsonLd, generateFaqJsonLd, generateBreadcrumbJsonLd } from "@/lib/structured-data";
 
 export const dynamicParams = true;
@@ -191,6 +192,11 @@ export default async function CityPage({
           tomorrow={weather.tomorrow}
           cityName={city.name}
         />
+
+        {/* Share forecast */}
+        <div className="mt-3">
+          <ShareButton cityName={city.name} slug={slug} />
+        </div>
 
         {/* Newsletter subscribe — right after weather card, peak engagement */}
         <div className="mt-3">
