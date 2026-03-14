@@ -9,6 +9,9 @@ import Footer from "@/components/Footer";
 import { getWeatherByCoords, getWeatherGradient, reverseGeocode } from "@/lib/weather";
 import { generateWebsiteJsonLd } from "@/lib/structured-data";
 import SubscribeForm from "@/components/SubscribeForm";
+import WeatherTicker from "@/components/WeatherTicker";
+import WeatherParticles from "@/components/WeatherParticles";
+import TrendingWeather from "@/components/TrendingWeather";
 
 async function WeatherDisplay({
   lat,
@@ -121,30 +124,75 @@ export default async function HomePage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div className="max-w-lg mx-auto px-4 py-4">
-        <Header isLanding />
 
-        {/* Trust indicators */}
-        <div className="flex items-center justify-center gap-4 mb-8">
-          <div className="trust-badge rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5">
-            <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-            Live Data
+      {/* Live weather ticker — above everything */}
+      <Suspense fallback={null}>
+        <WeatherTicker />
+      </Suspense>
+
+      <div className="max-w-lg mx-auto px-4 py-4 relative">
+        {/* Animated weather particles — behind content */}
+        <WeatherParticles />
+
+        <div className="relative z-10">
+          <Header isLanding />
+
+          {/* Trust indicators */}
+          <div className="flex items-center justify-center gap-4 mb-8">
+            <div className="trust-badge rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5">
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+              Live Data
+            </div>
+            <span className="text-[10px] text-white/20 font-semibold">Updated hourly</span>
           </div>
-          <span className="text-[10px] text-white/20 font-semibold">Updated hourly</span>
-        </div>
 
-        <div className="space-y-4">
-          <SearchBar />
-          <div className="flex justify-center">
-            <GeolocateButton />
+          <div className="space-y-4">
+            <SearchBar />
+            <div className="flex justify-center">
+              <GeolocateButton />
+            </div>
           </div>
-        </div>
 
-        <div className="mt-14">
-          <PopularCities />
-        </div>
+          {/* Trending weather section */}
+          <div className="mt-10">
+            <Suspense fallback={
+              <div className="grid grid-cols-3 gap-2">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="card rounded-2xl p-3 h-32">
+                    <div className="flex flex-col items-center gap-2">
+                      <div className="skeleton w-8 h-8 rounded-full" />
+                      <div className="skeleton w-16 h-3" />
+                      <div className="skeleton w-10 h-5" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            }>
+              <TrendingWeather />
+            </Suspense>
+          </div>
 
-        <Footer />
+          <div className="mt-10">
+            <Suspense fallback={
+              <div className="space-y-6">
+                {[1, 2, 3].map((i) => (
+                  <div key={i}>
+                    <div className="skeleton w-20 h-3 mx-auto mb-3" />
+                    <div className="flex flex-wrap justify-center gap-2">
+                      {[1, 2, 3, 4, 5].map((j) => (
+                        <div key={j} className="skeleton w-28 h-10 rounded-xl" />
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            }>
+              <PopularCities />
+            </Suspense>
+          </div>
+
+          <Footer />
+        </div>
       </div>
     </div>
   );
