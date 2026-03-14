@@ -9,6 +9,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { getWeatherByCoords, getWeatherGradient, searchLocations } from "@/lib/weather";
 import { getCityBySlug, getCityLabel, slugToQuery, CityData } from "@/lib/cities";
+import SubscribeForm from "@/components/SubscribeForm";
 import { generateWeatherJsonLd } from "@/lib/structured-data";
 
 export const dynamicParams = true;
@@ -158,6 +159,11 @@ export default async function CityPage({
 
         <div className="mt-3">
           <HourlyForecast hours={weather.hourlyTomorrow} />
+        </div>
+
+        {/* Newsletter subscribe */}
+        <div className="mt-3">
+          <SubscribeForm cityName={city.name} timezone={city.timezone} />
         </div>
 
         {/* SEO content */}

@@ -9,6 +9,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { getWeatherByCoords, getWeatherGradient, reverseGeocode } from "@/lib/weather";
 import { generateWebsiteJsonLd } from "@/lib/structured-data";
+import SubscribeForm from "@/components/SubscribeForm";
 
 async function WeatherDisplay({
   lat,
@@ -54,6 +55,10 @@ async function WeatherDisplay({
 
         <div className="mt-3">
           <HourlyForecast hours={weather.hourlyTomorrow} />
+        </div>
+
+        <div className="mt-3">
+          <SubscribeForm cityName={cityName} timezone="auto" />
         </div>
 
         <Footer />
