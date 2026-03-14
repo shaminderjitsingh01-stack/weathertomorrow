@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { getAllSubscribers } from "@/lib/beehiiv";
+import { getAllCitySlugs } from "@/lib/cities";
 
 export const dynamic = "force-dynamic";
 
@@ -17,6 +18,17 @@ export default async function AdminPage({
   }
 
   const subscribers = await getAllSubscribers();
+  const curatedCitySlugs = getAllCitySlugs();
+  // Unique cities from subscribers that aren't in the curated list = dynamically created pages
+  const subscriberCities = new Set<string>();
+  for (const sub of subscribers) {
+    const cityField = sub.custom_fields?.find((f) => f.name === "city");
+    if (cityField?.value) {
+      const slug = cityField.value.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+      if (!curatedCitySlugs.includes(slug)) subscriberCities.add(slug);
+    }
+  }
+  const totalPages = curatedCitySlugs.length + subscriberCities.size + 4; // +4 for home, about, privacy, not-found
 
   // Group by city
   const cityMap = new Map<string, { count: number; emails: string[] }>();
@@ -75,7 +87,15 @@ export default async function AdminPage({
           <StatCard label="Total Subscribers" value={subscribers.length} />
           <StatCard label="Active" value={statusCount.active} color="text-emerald-400" />
           <StatCard label="Pending" value={statusCount.pending} color="text-amber-400" />
-          <StatCard label="Cities" value={cityMap.size} color="text-blue-400" />
+          <StatCard label="Sub Cities" value={cityMap.size} color="text-blue-400" />
+        </div>
+
+        {/* Pages */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+          <StatCard label="Total Pages" value={totalPages} color="text-purple-400" />
+          <StatCard label="Curated Cities" value={curatedCitySlugs.length} />
+          <StatCard label="Dynamic Cities" value={subscriberCities.size} color="text-cyan-400" />
+          <StatCard label="Static Pages" value={4} />
         </div>
 
         {/* Forecast type breakdown */}
