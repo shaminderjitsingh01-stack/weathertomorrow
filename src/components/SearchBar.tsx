@@ -99,12 +99,12 @@ export default function SearchBar() {
       </div>
 
       {isOpen && results.length > 0 && (
-        <div className="absolute top-full mt-2 w-full card rounded-xl overflow-hidden z-50">
+        <div className="absolute top-full mt-2 w-full bg-slate-900/95 backdrop-blur-xl border border-white/15 shadow-2xl rounded-xl overflow-hidden z-50">
           {results.map((result, i) => (
             <button
               key={i}
               onClick={() => handleSelect(result)}
-              className="w-full px-4 py-3.5 text-left hover:bg-white/8 transition-colors flex items-center justify-between border-b border-white/5 last:border-0"
+              className="w-full px-4 py-3.5 text-left hover:bg-white/12 transition-colors flex items-center justify-between border-b border-white/8 last:border-0"
             >
               <div className="flex items-center gap-3">
                 <svg className="w-4 h-4 text-white/20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
