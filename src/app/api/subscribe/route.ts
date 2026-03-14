@@ -4,7 +4,7 @@ import { createSubscriber } from "@/lib/beehiiv";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { email, city, timezone, sendHour } = body;
+    const { email, city, timezone, sendHour, forecastType } = body;
 
     if (!email || !email.includes("@")) {
       return NextResponse.json(
@@ -24,7 +24,8 @@ export async function POST(request: NextRequest) {
       email,
       city,
       timezone || "UTC",
-      sendHour ?? 20
+      sendHour ?? 20,
+      forecastType || "tomorrow"
     );
 
     if (!result.success) {

@@ -2,9 +2,8 @@ import { Suspense } from "react";
 import SearchBar from "@/components/SearchBar";
 import GeolocateButton from "@/components/GeolocateButton";
 import PopularCities from "@/components/PopularCities";
-import WeatherCard from "@/components/WeatherCard";
+import DayToggle from "@/components/DayToggle";
 import HourlyForecast from "@/components/HourlyForecast";
-import TodayComparison from "@/components/TodayComparison";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { getWeatherByCoords, getWeatherGradient, reverseGeocode } from "@/lib/weather";
@@ -42,16 +41,11 @@ async function WeatherDisplay({
           <SearchBar />
         </div>
 
-        <WeatherCard
+        <DayToggle
           today={weather.today}
           tomorrow={weather.tomorrow}
           cityName={cityName}
-          tomorrowDate={weather.tomorrow.date}
         />
-
-        <div className="mt-3">
-          <TodayComparison today={weather.today} tomorrow={weather.tomorrow} />
-        </div>
 
         <div className="mt-3">
           <HourlyForecast hours={weather.hourlyTomorrow} />

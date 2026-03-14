@@ -11,6 +11,7 @@ export default function SubscribeForm({
 }) {
   const [email, setEmail] = useState("");
   const [sendHour, setSendHour] = useState(20); // default 8pm
+  const [forecastType, setForecastType] = useState<"tomorrow" | "today">("tomorrow");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -35,6 +36,7 @@ export default function SubscribeForm({
           city: cityName,
           timezone,
           sendHour,
+          forecastType,
         }),
       });
 
@@ -100,6 +102,37 @@ export default function SubscribeForm({
           className="w-full search-input rounded-xl px-4 py-3 text-white placeholder-white/25 focus:outline-none text-sm font-medium"
           disabled={status === "loading"}
         />
+
+        {/* Forecast type toggle */}
+        <div className="flex items-center gap-3">
+          <label className="text-[11px] text-white/30 font-semibold whitespace-nowrap">
+            Forecast
+          </label>
+          <div className="flex gap-1 flex-1">
+            <button
+              type="button"
+              onClick={() => { setForecastType("today"); setSendHour(6); }}
+              className={`flex-1 py-2 rounded-l-lg text-xs font-bold transition-all cursor-pointer ${
+                forecastType === "today"
+                  ? "bg-white/12 text-white"
+                  : "bg-white/4 text-white/30"
+              }`}
+            >
+              Today&apos;s weather
+            </button>
+            <button
+              type="button"
+              onClick={() => { setForecastType("tomorrow"); setSendHour(20); }}
+              className={`flex-1 py-2 rounded-r-lg text-xs font-bold transition-all cursor-pointer ${
+                forecastType === "tomorrow"
+                  ? "bg-white/12 text-white"
+                  : "bg-white/4 text-white/30"
+              }`}
+            >
+              Tomorrow&apos;s weather
+            </button>
+          </div>
+        </div>
 
         <div className="flex items-center gap-3">
           <label className="text-[11px] text-white/30 font-semibold whitespace-nowrap">

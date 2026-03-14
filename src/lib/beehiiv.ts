@@ -31,7 +31,8 @@ export async function createSubscriber(
   email: string,
   city: string,
   timezone: string,
-  sendHour: number = 20 // default 8pm
+  sendHour: number = 20,
+  forecastType: "today" | "tomorrow" = "tomorrow"
 ): Promise<{ success: boolean; error?: string }> {
   const pubId = getPublicationId();
 
@@ -46,6 +47,7 @@ export async function createSubscriber(
         { name: "city", value: city },
         { name: "timezone", value: timezone },
         { name: "send_hour", value: String(sendHour) },
+        { name: "forecast_type", value: forecastType },
       ],
     }),
   });

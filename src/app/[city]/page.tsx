@@ -1,9 +1,8 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import SearchBar from "@/components/SearchBar";
-import WeatherCard from "@/components/WeatherCard";
+import DayToggle from "@/components/DayToggle";
 import HourlyForecast from "@/components/HourlyForecast";
-import TodayComparison from "@/components/TodayComparison";
 import PopularCities from "@/components/PopularCities";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -146,16 +145,11 @@ export default async function CityPage({
           <SearchBar />
         </div>
 
-        <WeatherCard
+        <DayToggle
           today={weather.today}
           tomorrow={weather.tomorrow}
           cityName={city.name}
-          tomorrowDate={weather.tomorrow.date}
         />
-
-        <div className="mt-3">
-          <TodayComparison today={weather.today} tomorrow={weather.tomorrow} />
-        </div>
 
         <div className="mt-3">
           <HourlyForecast hours={weather.hourlyTomorrow} />
