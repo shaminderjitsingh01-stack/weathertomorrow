@@ -4,6 +4,7 @@ import GeolocateButton from "@/components/GeolocateButton";
 import PopularCities from "@/components/PopularCities";
 import WeatherCard from "@/components/WeatherCard";
 import HourlyForecast from "@/components/HourlyForecast";
+import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { getWeatherByCoords, getWeatherGradient, reverseGeocode } from "@/lib/weather";
 
@@ -25,13 +26,8 @@ async function WeatherDisplay({
 
   return (
     <div className={`min-h-screen ${gradient} transition-colors duration-700`}>
-      <div className="max-w-lg mx-auto px-4 py-8">
-        <header className="text-center mb-6">
-          <a href="/" className="text-2xl font-bold tracking-tight hover:opacity-80 transition-opacity">
-            Weather Tomorrow
-          </a>
-          <p className="text-white/60 text-sm mt-1">{cityName}</p>
-        </header>
+      <div className="max-w-lg mx-auto px-4 py-6">
+        <Header subtitle={cityName} />
 
         <div className="mb-6">
           <SearchBar />
@@ -43,7 +39,7 @@ async function WeatherDisplay({
           tomorrowDate={weather.tomorrow.date}
         />
 
-        <div className="mt-6">
+        <div className="mt-4">
           <HourlyForecast hours={weather.hourly} />
         </div>
 
@@ -56,14 +52,11 @@ async function WeatherDisplay({
 function LoadingState() {
   return (
     <div className="min-h-screen weather-default">
-      <div className="max-w-lg mx-auto px-4 py-8">
-        <header className="text-center mb-6">
-          <h1 className="text-2xl font-bold tracking-tight">
-            Weather Tomorrow
-          </h1>
-        </header>
-        <div className="flex justify-center items-center py-20">
-          <div className="w-8 h-8 border-3 border-white/30 border-t-white/80 rounded-full animate-spin" />
+      <div className="max-w-lg mx-auto px-4 py-6">
+        <Header />
+        <div className="flex flex-col items-center justify-center py-24 gap-4">
+          <div className="w-10 h-10 border-3 border-white/20 border-t-white/60 rounded-full animate-spin" />
+          <p className="text-sm text-white/30 font-medium">Loading forecast...</p>
         </div>
       </div>
     </div>
@@ -90,18 +83,10 @@ export default async function HomePage({
     );
   }
 
-  // Landing page — no location yet
   return (
     <div className="min-h-screen weather-default">
-      <div className="max-w-lg mx-auto px-4 py-8">
-        <header className="text-center mb-10 pt-12">
-          <h1 className="text-4xl font-bold tracking-tight mb-3">
-            Weather Tomorrow
-          </h1>
-          <p className="text-white/70 text-lg">
-            Tomorrow&apos;s weather. Instantly.
-          </p>
-        </header>
+      <div className="max-w-lg mx-auto px-4 py-6">
+        <Header isLanding />
 
         <div className="space-y-4">
           <SearchBar />
@@ -110,7 +95,7 @@ export default async function HomePage({
           </div>
         </div>
 
-        <div className="mt-12">
+        <div className="mt-14">
           <PopularCities />
         </div>
 

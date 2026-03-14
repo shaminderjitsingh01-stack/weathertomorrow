@@ -63,7 +63,6 @@ export default function SearchBar() {
     if (result.slug) {
       router.push(`/${result.slug}`);
     } else {
-      // For non-predefined cities, use coords
       router.push(
         `/?lat=${result.latitude}&lon=${result.longitude}&name=${encodeURIComponent(result.name)}`
       );
@@ -79,12 +78,12 @@ export default function SearchBar() {
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search any city..."
-          className="w-full glass rounded-xl px-4 py-3 pl-10 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-white/30 text-sm"
+          placeholder="Search any city worldwide..."
+          className="w-full search-input rounded-xl px-4 py-3.5 pl-11 text-white placeholder-white/30 focus:outline-none text-sm font-medium"
           autoComplete="off"
         />
         <svg
-          className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40"
+          className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -97,22 +96,28 @@ export default function SearchBar() {
           />
         </svg>
         {isLoading && (
-          <div className="absolute right-3 top-1/2 -translate-y-1/2">
-            <div className="w-4 h-4 border-2 border-white/30 border-t-white/80 rounded-full animate-spin" />
+          <div className="absolute right-3.5 top-1/2 -translate-y-1/2">
+            <div className="w-4 h-4 border-2 border-white/20 border-t-white/60 rounded-full animate-spin" />
           </div>
         )}
       </div>
 
       {isOpen && results.length > 0 && (
-        <div className="absolute top-full mt-2 w-full glass rounded-xl overflow-hidden z-50">
+        <div className="absolute top-full mt-2 w-full card rounded-xl overflow-hidden z-50">
           {results.map((result, i) => (
             <button
               key={i}
               onClick={() => handleSelect(result)}
-              className="w-full px-4 py-3 text-left hover:bg-white/10 transition-colors flex items-center justify-between"
+              className="w-full px-4 py-3.5 text-left hover:bg-white/8 transition-colors flex items-center justify-between border-b border-white/5 last:border-0"
             >
-              <span className="text-sm font-medium">{result.name}</span>
-              <span className="text-xs text-white/50">
+              <div className="flex items-center gap-3">
+                <svg className="w-4 h-4 text-white/20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <span className="text-sm font-medium">{result.name}</span>
+              </div>
+              <span className="text-xs text-white/30 font-medium">
                 {result.admin1 ? `${result.admin1}, ` : ""}
                 {result.country}
               </span>

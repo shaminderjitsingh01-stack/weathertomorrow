@@ -33,17 +33,17 @@ export default function GeolocateButton() {
     <button
       onClick={handleGeolocate}
       disabled={isLoading}
-      className="glass-light rounded-xl px-4 py-3 text-sm font-medium hover:bg-white/20 transition-colors flex items-center gap-2 disabled:opacity-50"
+      className="card-interactive rounded-xl px-5 py-3.5 text-sm font-semibold flex items-center gap-2.5 disabled:opacity-50 cursor-pointer"
     >
       {isLoading ? (
         <>
-          <div className="w-4 h-4 border-2 border-white/30 border-t-white/80 rounded-full animate-spin" />
-          Locating...
+          <div className="w-4 h-4 border-2 border-white/20 border-t-white/60 rounded-full animate-spin" />
+          <span className="text-white/60">Detecting location...</span>
         </>
       ) : (
         <>
           <svg
-            className="w-4 h-4"
+            className="w-4 h-4 text-blue-400"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -52,14 +52,9 @@ export default function GeolocateButton() {
               strokeLinecap="round"
               strokeLinejoin="round"
               strokeWidth={2}
-              d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+              d="M12 2a7 7 0 00-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 00-7-7z"
             />
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-            />
+            <circle cx="12" cy="9" r="2.5" strokeWidth={2} />
           </svg>
           Use My Location
         </>

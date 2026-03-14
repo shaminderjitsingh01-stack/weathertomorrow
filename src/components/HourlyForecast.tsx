@@ -1,4 +1,5 @@
-import { HourlyForecast as HourlyData, getWeatherEmoji } from "@/lib/weather";
+import { HourlyForecast as HourlyData } from "@/lib/weather";
+import { WeatherIconSmall } from "./WeatherIcon";
 
 export default function HourlyForecast({ hours }: { hours: HourlyData[] }) {
   const formatHour = (isoStr: string) => {
@@ -10,27 +11,25 @@ export default function HourlyForecast({ hours }: { hours: HourlyData[] }) {
   };
 
   return (
-    <div className="glass rounded-2xl p-5">
-      <h3 className="font-semibold mb-4 flex items-center gap-2">
-        <span>🕐</span> Hourly Forecast
-      </h3>
-      <div className="flex gap-3 overflow-x-auto pb-2 hourly-scroll">
+    <div className="card rounded-2xl p-5">
+      <p className="section-label mb-4">Hourly Forecast</p>
+      <div className="flex gap-2 overflow-x-auto pb-2 hourly-scroll">
         {hours.map((hour, i) => (
           <div
             key={i}
-            className="flex-shrink-0 glass-light rounded-xl p-3 min-w-[72px] text-center"
+            className="flex-shrink-0 card-metric rounded-xl p-3 min-w-[68px] text-center"
           >
-            <div className="text-xs text-white/60 mb-1">
+            <div className="text-[10px] font-medium text-white/40 mb-2">
               {formatHour(hour.time)}
             </div>
-            <div className="text-xl mb-1">
-              {getWeatherEmoji(hour.weatherCode, hour.isDay)}
+            <div className="flex justify-center mb-2">
+              <WeatherIconSmall code={hour.weatherCode} isDay={hour.isDay} />
             </div>
-            <div className="text-sm font-semibold">
+            <div className="text-sm font-bold">
               {Math.round(hour.temperature)}°
             </div>
             {hour.precipitationProbability > 0 && (
-              <div className="text-xs text-blue-300 mt-1">
+              <div className="text-[10px] text-blue-400 font-medium mt-1">
                 {hour.precipitationProbability}%
               </div>
             )}

@@ -8,58 +8,97 @@
 }
 
 :root {
-  --background: #0f172a;
+  --background: #0b1120;
   --foreground: #f1f5f9;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans), system-ui, sans-serif;
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Weather-reactive gradient backgrounds */
+/* Weather-reactive gradient backgrounds — deeper, richer */
 .weather-sunny {
-  background: linear-gradient(135deg, #f59e0b 0%, #f97316 50%, #ef4444 100%);
+  background: linear-gradient(165deg, #1e3a8a 0%, #2563eb 35%, #3b82f6 65%, #60a5fa 100%);
 }
 
 .weather-cloudy {
-  background: linear-gradient(135deg, #64748b 0%, #94a3b8 50%, #cbd5e1 100%);
+  background: linear-gradient(165deg, #1e293b 0%, #334155 40%, #475569 75%, #64748b 100%);
 }
 
 .weather-rainy {
-  background: linear-gradient(135deg, #1e3a5f 0%, #374151 50%, #4b5563 100%);
+  background: linear-gradient(165deg, #0f172a 0%, #1e293b 35%, #334155 70%, #475569 100%);
 }
 
 .weather-snowy {
-  background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 50%, #94a3b8 100%);
+  background: linear-gradient(165deg, #1e293b 0%, #334155 35%, #64748b 70%, #94a3b8 100%);
 }
 
 .weather-night {
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+  background: linear-gradient(165deg, #020617 0%, #0f172a 40%, #1e293b 100%);
 }
 
 .weather-default {
-  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #60a5fa 100%);
+  background: linear-gradient(165deg, #0f172a 0%, #1e3a8a 40%, #1d4ed8 70%, #2563eb 100%);
 }
 
-/* Smooth card glass effect */
-.glass {
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(12px);
+/* Solid cards with depth — not thin glass */
+.card {
+  background: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.card-elevated {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
-.glass-light {
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+.card-metric {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.card-interactive {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.2s ease;
+}
+
+.card-interactive:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+/* Search input */
+.search-input {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.search-input:focus {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1), 0 0 0 3px rgba(59, 130, 246, 0.15);
 }
 
 /* Hourly scroll */
 .hourly-scroll {
   scrollbar-width: thin;
-  scrollbar-color: rgba(255,255,255,0.3) transparent;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
 }
 
 .hourly-scroll::-webkit-scrollbar {
@@ -71,6 +110,21 @@ body {
 }
 
 .hourly-scroll::-webkit-scrollbar-thumb {
-  background: rgba(255,255,255,0.3);
+  background: rgba(255, 255, 255, 0.2);
   border-radius: 2px;
+}
+
+/* Section label */
+.section-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* Divider */
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
 }
