@@ -25,8 +25,16 @@ export const metadata: Metadata = {
   ],
   metadataBase: new URL("https://weathertomorrow.app"),
   icons: {
-    icon: "/favicon.svg",
+    icon: [
+      { url: "/api/logo/favicon?size=32", sizes: "32x32", type: "image/png" },
+      { url: "/api/logo/favicon?size=48", sizes: "48x48", type: "image/png" },
+      { url: "/api/logo/favicon?size=192", sizes: "192x192", type: "image/png" },
+    ],
+    apple: [
+      { url: "/api/logo/favicon?size=180", sizes: "180x180", type: "image/png" },
+    ],
   },
+  manifest: "/manifest.json",
   openGraph: {
     title: "Weather Tomorrow — Tomorrow's Forecast, Instantly",
     description:
@@ -34,13 +42,14 @@ export const metadata: Metadata = {
     url: "https://weathertomorrow.app",
     siteName: "Weather Tomorrow",
     type: "website",
-    images: ["/api/og/new-york"],
+    images: ["/api/logo/thumbnail"],
   },
   twitter: {
     card: "summary_large_image",
     title: "Weather Tomorrow",
     description:
       "Tomorrow's weather forecast for any city. Fast, free, updated hourly.",
+    images: ["/api/logo/thumbnail"],
   },
   robots: {
     index: true,
