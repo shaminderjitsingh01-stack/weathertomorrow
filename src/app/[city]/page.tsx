@@ -5,13 +5,14 @@ import SearchBar from "@/components/SearchBar";
 import DayToggle from "@/components/DayToggle";
 import HourlyForecast from "@/components/HourlyForecast";
 import PopularCities from "@/components/PopularCities";
+import NearbyCities from "@/components/NearbyCities";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import WeatherTicker from "@/components/WeatherTicker";
-import { getWeatherByCoords, getWeatherGradient, searchLocations } from "@/lib/weather";
+import { getWeatherByCoords, getWeatherGradient, getWeatherDescription, searchLocations } from "@/lib/weather";
 import { getCityBySlug, getCityLabel, slugToQuery, CityData } from "@/lib/cities";
 import SubscribeForm from "@/components/SubscribeForm";
-import { generateWeatherJsonLd } from "@/lib/structured-data";
+import { generateWeatherJsonLd, generateFaqJsonLd, generateBreadcrumbJsonLd } from "@/lib/structured-data";
 
 export const dynamicParams = true;
 export const revalidate = 3600;
@@ -48,8 +49,31 @@ export async function generateMetadata({
   const city = await resolveCity(slug);
   if (!city) return {};
 
-  const title = `Weather Tomorrow in ${city.name}, ${city.country}`;
-  const description = `Tomorrow's weather forecast for ${city.name}, ${city.country}. Temperature, rain chance, wind, UV index, hourly forecast, and what to wear. Updated every hour.`;
+  // Fetch weather data to include real temperature and conditions in meta
+  let title = `Weather Tomorrow in ${city.name}, ${city.country}`;
+  let description = `Tomorrow's weather forecast for ${city.name}, ${city.country}. Temperature, rain chance, wind, UV index, hourly forecast, and what to wear. Updated every hour.`;
+
+  try {
+    const weather = await getWeatherByCoords(city.latitude, city.longitude, city.timezone);
+    const tomorrow = weather.tomorrow;
+    const condition = getWeatherDescription(tomorrow.weatherCode).toLowerCase();
+    const tempMax = Math.round(tomorrow.temperatureMax);
+    const rainChance = tomorrow.precipitationProbabilityMax;
+
+    // Format tomorrow's date for the title (e.g., "Mon, Jun 16")
+    const tomorrowDate = new Date(tomorrow.date + "T12:00:00");
+    const dayName = tomorrowDate.toLocaleDateString("en-US", { weekday: "short" });
+    const monthDay = tomorrowDate.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+
+    // Format today's date for the description "Updated" line
+    const now = new Date();
+    const updatedDate = now.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+
+    title = `Weather Tomorrow in ${city.name} — ${dayName}, ${monthDay}`;
+    description = `Tomorrow's weather in ${city.name}: ${tempMax}°C, ${condition} with ${rainChance}% rain chance. Hourly forecast, what to wear, and activities. Updated ${updatedDate}.`;
+  } catch {
+    // Fall back to static description if weather fetch fails
+  }
 
   return {
     title,
@@ -133,12 +157,22 @@ export default async function CityPage({
   });
 
   const jsonLd = generateWeatherJsonLd(city, weather.tomorrow);
+  const faqJsonLd = generateFaqJsonLd(city, weather.tomorrow);
+  const breadcrumbJsonLd = generateBreadcrumbJsonLd(city.name, slug);
 
   return (
     <div className={`min-h-screen ${gradient}`}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
       {/* Weather ticker at top */}
       <Suspense fallback={null}>
@@ -165,6 +199,11 @@ export default async function CityPage({
         {/* Newsletter subscribe */}
         <div className="mt-3">
           <SubscribeForm cityName={city.name} timezone={city.timezone} />
+        </div>
+
+        {/* Nearby cities — internal linking for SEO */}
+        <div className="mt-3">
+          <NearbyCities currentCity={city} currentSlug={slug} />
         </div>
 
         {/* SEO content */}
