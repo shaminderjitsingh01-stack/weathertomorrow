@@ -83,16 +83,30 @@ export async function getWeatherByCoords(
     forecast_days: "2",
   });
 
-  const res = await fetch(
-    `https://api.open-meteo.com/v1/forecast?${params.toString()}`,
-    { next: { revalidate: 3600 } } // Cache for 1 hour
-  );
+  let data;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const res = await fetch(
+      `https://api.open-meteo.com/v1/forecast?${params.toString()}`,
+      { next: { revalidate: 3600 } }
+    );
 
-  if (!res.ok) {
+    if (res.ok) {
+      data = await res.json();
+      break;
+    }
+
+    // Rate limited — wait and retry
+    if (res.status === 429 && attempt < 2) {
+      await new Promise((r) => setTimeout(r, (attempt + 1) * 2000));
+      continue;
+    }
+
     throw new Error(`Weather API error: ${res.status}`);
   }
 
-  const data = await res.json();
+  if (!data) {
+    throw new Error("Weather API: failed after retries");
+  }
 
   // Tomorrow is index 1
   const tomorrow: DailyForecast = {
