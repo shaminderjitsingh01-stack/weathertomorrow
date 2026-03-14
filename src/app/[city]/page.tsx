@@ -7,11 +7,11 @@ import PopularCities from "@/components/PopularCities";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { getWeatherByCoords, getWeatherGradient } from "@/lib/weather";
-import { getCityBySlug, getAllCitySlugs, getCityLabel } from "@/lib/cities";
+import { getCityBySlug, getCityLabel } from "@/lib/cities";
 
-export function generateStaticParams() {
-  return getAllCitySlugs().map((city) => ({ city }));
-}
+// Don't pre-render at build time — generate on first request, then cache (ISR)
+// This avoids rate-limiting the weather API during build
+export const dynamicParams = true;
 
 export async function generateMetadata({
   params,
