@@ -11,45 +11,6 @@ interface PreferencesFormProps {
   initialForecastType: "today" | "tomorrow";
 }
 
-const COMMON_TIMEZONES = [
-  "America/New_York",
-  "America/Chicago",
-  "America/Denver",
-  "America/Los_Angeles",
-  "America/Anchorage",
-  "Pacific/Honolulu",
-  "America/Toronto",
-  "America/Vancouver",
-  "America/Mexico_City",
-  "America/Sao_Paulo",
-  "America/Argentina/Buenos_Aires",
-  "Europe/London",
-  "Europe/Paris",
-  "Europe/Berlin",
-  "Europe/Madrid",
-  "Europe/Rome",
-  "Europe/Amsterdam",
-  "Europe/Moscow",
-  "Europe/Istanbul",
-  "Africa/Cairo",
-  "Africa/Lagos",
-  "Africa/Johannesburg",
-  "Africa/Nairobi",
-  "Asia/Dubai",
-  "Asia/Kolkata",
-  "Asia/Bangkok",
-  "Asia/Singapore",
-  "Asia/Hong_Kong",
-  "Asia/Shanghai",
-  "Asia/Tokyo",
-  "Asia/Seoul",
-  "Australia/Sydney",
-  "Australia/Melbourne",
-  "Australia/Perth",
-  "Pacific/Auckland",
-  "UTC",
-];
-
 export default function PreferencesForm({
   email,
   token,
@@ -59,11 +20,15 @@ export default function PreferencesForm({
   initialForecastType,
 }: PreferencesFormProps) {
   const [city, setCity] = useState(initialCity);
-  const [timezone, setTimezone] = useState(initialTimezone);
   const [sendHour, setSendHour] = useState(initialSendHour);
   const [forecastType, setForecastType] = useState<"today" | "tomorrow">(initialForecastType);
   const [status, setStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
+
+  // Auto-detect timezone from browser
+  const detectedTimezone = typeof window !== "undefined"
+    ? Intl.DateTimeFormat().resolvedOptions().timeZone
+    : initialTimezone;
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
@@ -85,7 +50,7 @@ export default function PreferencesForm({
           email,
           token,
           city: city.trim(),
-          timezone,
+          timezone: detectedTimezone,
           sendHour,
           forecastType,
         }),
@@ -122,7 +87,7 @@ export default function PreferencesForm({
             </svg>
           </div>
           <div>
-            <h1 className="text-lg font-bold">Email Preferences</h1>
+            <h1 className="text-lg font-bold">My Subscription</h1>
             <p className="text-xs text-white/35">{email}</p>
           </div>
         </div>
@@ -139,46 +104,24 @@ export default function PreferencesForm({
               type="text"
               value={city}
               onChange={(e) => setCity(e.target.value)}
-              placeholder="e.g. New York"
+              placeholder="e.g. Singapore, London, New York"
               className="w-full search-input rounded-xl px-4 py-3 text-white placeholder-white/25 focus:outline-none text-sm font-medium"
               disabled={status === "saving"}
             />
-          </div>
-
-          {/* Timezone */}
-          <div>
-            <label className="block text-[11px] text-white/40 font-semibold uppercase tracking-wider mb-2">
-              Timezone
-            </label>
-            <select
-              value={timezone}
-              onChange={(e) => setTimezone(e.target.value)}
-              className="w-full search-input rounded-xl px-4 py-3 text-white text-sm font-medium focus:outline-none bg-transparent appearance-none cursor-pointer"
-              disabled={status === "saving"}
-            >
-              {/* Show current timezone first if it's not in common list */}
-              {!COMMON_TIMEZONES.includes(timezone) && (
-                <option value={timezone} className="bg-slate-900">
-                  {timezone}
-                </option>
-              )}
-              {COMMON_TIMEZONES.map((tz) => (
-                <option key={tz} value={tz} className="bg-slate-900">
-                  {tz.replace(/_/g, " ")}
-                </option>
-              ))}
-            </select>
+            <p className="text-[10px] text-white/20 mt-1.5">
+              The city you want weather forecasts for
+            </p>
           </div>
 
           {/* Forecast type toggle */}
           <div>
             <label className="block text-[11px] text-white/40 font-semibold uppercase tracking-wider mb-2">
-              Forecast Type
+              What do you want to receive?
             </label>
             <div className="flex gap-1">
               <button
                 type="button"
-                onClick={() => { setForecastType("today"); setSendHour(6); }}
+                onClick={() => { setForecastType("today"); if (sendHour >= 12) setSendHour(6); }}
                 className={`flex-1 py-2.5 rounded-l-xl text-sm font-bold transition-all cursor-pointer ${
                   forecastType === "today"
                     ? "bg-white/12 text-white"
@@ -189,7 +132,7 @@ export default function PreferencesForm({
               </button>
               <button
                 type="button"
-                onClick={() => { setForecastType("tomorrow"); setSendHour(20); }}
+                onClick={() => { setForecastType("tomorrow"); if (sendHour < 12) setSendHour(20); }}
                 className={`flex-1 py-2.5 rounded-r-xl text-sm font-bold transition-all cursor-pointer ${
                   forecastType === "tomorrow"
                     ? "bg-white/12 text-white"
@@ -199,12 +142,17 @@ export default function PreferencesForm({
                 Tomorrow&apos;s weather
               </button>
             </div>
+            <p className="text-[10px] text-white/20 mt-1.5">
+              {forecastType === "today"
+                ? "Get today's forecast in the morning before you head out"
+                : "Get tomorrow's forecast in the evening so you can plan ahead"}
+            </p>
           </div>
 
           {/* Send hour */}
           <div>
             <label className="block text-[11px] text-white/40 font-semibold uppercase tracking-wider mb-2">
-              Send Time
+              Delivery Time
             </label>
             <select
               value={sendHour}
@@ -247,11 +195,13 @@ export default function PreferencesForm({
             <p className="text-xs text-rose-400 text-center">{errorMsg}</p>
           )}
         </form>
-      </div>
 
-      <p className="text-[10px] text-white/15 text-center mt-4">
-        weathertomorrow.app
-      </p>
+        <div className="divider my-5" />
+
+        <a href="/" className="block text-center text-xs text-white/30 hover:text-white/50 transition-colors">
+          Back to Weather Tomorrow
+        </a>
+      </div>
     </div>
   );
 }
