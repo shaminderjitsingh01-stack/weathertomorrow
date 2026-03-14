@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import SearchBar from "@/components/SearchBar";
 import DayToggle from "@/components/DayToggle";
@@ -6,6 +7,7 @@ import HourlyForecast from "@/components/HourlyForecast";
 import PopularCities from "@/components/PopularCities";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import WeatherTicker from "@/components/WeatherTicker";
 import { getWeatherByCoords, getWeatherGradient, searchLocations } from "@/lib/weather";
 import { getCityBySlug, getCityLabel, slugToQuery, CityData } from "@/lib/cities";
 import SubscribeForm from "@/components/SubscribeForm";
@@ -95,7 +97,7 @@ export default async function CityPage({
     // Graceful error state
     return (
       <div className="min-h-screen weather-default">
-        <div className="max-w-lg mx-auto px-4 py-4">
+        <div className="max-w-2xl mx-auto px-4 py-4">
           <Header subtitle={getCityLabel(city)} />
           <div className="mb-5">
             <SearchBar />
@@ -138,7 +140,12 @@ export default async function CityPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div className="max-w-lg mx-auto px-4 py-4">
+      {/* Weather ticker at top */}
+      <Suspense fallback={null}>
+        <WeatherTicker />
+      </Suspense>
+
+      <div className="max-w-2xl mx-auto px-4 py-4">
         <Header subtitle={label} lastUpdated={lastUpdated} />
 
         <div className="mb-5">

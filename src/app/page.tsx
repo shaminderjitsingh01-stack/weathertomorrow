@@ -12,6 +12,7 @@ import SubscribeForm from "@/components/SubscribeForm";
 import WeatherTicker from "@/components/WeatherTicker";
 import WeatherParticles from "@/components/WeatherParticles";
 import TrendingWeather from "@/components/TrendingWeather";
+import FeaturedForecast from "@/components/FeaturedForecast";
 
 async function WeatherDisplay({
   lat,
@@ -37,7 +38,7 @@ async function WeatherDisplay({
 
   return (
     <div className={`min-h-screen ${gradient}`}>
-      <div className="max-w-lg mx-auto px-4 py-4">
+      <div className="max-w-2xl mx-auto px-4 py-4">
         <Header subtitle={cityName} lastUpdated={lastUpdated} />
 
         <div className="mb-5">
@@ -67,7 +68,7 @@ async function WeatherDisplay({
 function LoadingSkeleton() {
   return (
     <div className="min-h-screen weather-default">
-      <div className="max-w-lg mx-auto px-4 py-4">
+      <div className="max-w-2xl mx-auto px-4 py-4">
         <Header />
         <div className="space-y-3 mt-8">
           <div className="card-elevated rounded-3xl p-8">
@@ -130,7 +131,7 @@ export default async function HomePage({
         <WeatherTicker />
       </Suspense>
 
-      <div className="max-w-lg mx-auto px-4 py-4 relative">
+      <div className="max-w-3xl mx-auto px-4 py-4 relative">
         {/* Animated weather particles — behind content */}
         <WeatherParticles />
 
@@ -146,17 +147,35 @@ export default async function HomePage({
             <span className="text-[10px] text-white/20 font-semibold">Updated hourly</span>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-4 max-w-md mx-auto">
             <SearchBar />
             <div className="flex justify-center">
               <GeolocateButton />
             </div>
           </div>
 
+          {/* Featured forecast — big spotlight card */}
+          <div className="mt-10">
+            <Suspense fallback={
+              <div className="card-featured rounded-3xl p-6 sm:p-8">
+                <div className="flex flex-col sm:flex-row items-center gap-6">
+                  <div className="skeleton w-20 h-20 rounded-full" />
+                  <div className="flex-1 space-y-3">
+                    <div className="skeleton w-32 h-6" />
+                    <div className="skeleton w-24 h-12" />
+                    <div className="skeleton w-40 h-4" />
+                  </div>
+                </div>
+              </div>
+            }>
+              <FeaturedForecast />
+            </Suspense>
+          </div>
+
           {/* Trending weather section */}
           <div className="mt-10">
             <Suspense fallback={
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
                 {[1, 2, 3].map((i) => (
                   <div key={i} className="card rounded-2xl p-3 h-32">
                     <div className="flex flex-col items-center gap-2">
@@ -178,9 +197,15 @@ export default async function HomePage({
                 {[1, 2, 3].map((i) => (
                   <div key={i}>
                     <div className="skeleton w-20 h-3 mx-auto mb-3" />
-                    <div className="flex flex-wrap justify-center gap-2">
-                      {[1, 2, 3, 4, 5].map((j) => (
-                        <div key={j} className="skeleton w-28 h-10 rounded-xl" />
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5">
+                      {[1, 2, 3, 4, 5, 6].map((j) => (
+                        <div key={j} className="card rounded-2xl p-3.5 h-36">
+                          <div className="flex flex-col items-center gap-2">
+                            <div className="skeleton w-9 h-9 rounded-full" />
+                            <div className="skeleton w-16 h-3" />
+                            <div className="skeleton w-10 h-6" />
+                          </div>
+                        </div>
                       ))}
                     </div>
                   </div>

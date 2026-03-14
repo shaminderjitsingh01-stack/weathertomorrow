@@ -25,17 +25,20 @@ export default function Header({
   lastUpdated?: string;
 }) {
   return (
-    <header className={`text-center ${isLanding ? "pt-20 pb-4 mb-8" : "pt-5 mb-5"}`}>
+    <header className={`text-center ${isLanding ? "pt-16 sm:pt-20 pb-4 mb-8" : "pt-5 mb-5"}`}>
       {isLanding ? (
         <>
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <LogoIcon size={36} />
-            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
+          <div className="flex items-center justify-center gap-3 sm:gap-4 mb-3">
+            <LogoIcon size={44} />
+            <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight">
               Weather Tomorrow
             </h1>
           </div>
-          <p className="text-white/40 text-base font-medium">
+          <p className="text-white/40 text-base sm:text-lg font-medium mb-1">
             Tomorrow&apos;s forecast for any city — instantly
+          </p>
+          <p className="text-white/20 text-xs sm:text-sm font-medium">
+            Free, accurate, updated every hour
           </p>
         </>
       ) : (

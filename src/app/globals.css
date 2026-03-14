@@ -49,20 +49,20 @@ body {
 /* ===== Card System — layered depth ===== */
 
 .card {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow:
     0 2px 12px rgba(0, 0, 0, 0.15),
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .card-elevated {
-  background: rgba(255, 255, 255, 0.07);
+  background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow:
     0 8px 32px rgba(0, 0, 0, 0.25),
     0 2px 8px rgba(0, 0, 0, 0.1),
@@ -70,9 +70,27 @@ body {
 }
 
 .card-metric {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.card-featured {
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.3),
+    0 4px 12px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.section-bg {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 1.5rem;
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.04);
 }
 
 .card-interactive {

@@ -51,7 +51,7 @@ export default async function TrendingWeather() {
   return (
     <div>
       <p className="section-label mb-3 text-center">Trending Right Now</p>
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
         {trends.map((trend) => (
           <Link
             key={trend.label}
