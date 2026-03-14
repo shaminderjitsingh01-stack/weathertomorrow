@@ -46,7 +46,7 @@ export async function createSubscriber(
       reactivate_existing: true,
       send_welcome_email: true,
       custom_fields: [
-        { name: "city", value: city },
+        { name: "weather_city", value: city },
         { name: "timezone", value: timezone },
         { name: "send_hour", value: String(sendHour) },
         { name: "forecast_type", value: forecastType },
@@ -198,7 +198,7 @@ export function groupSubscribersByCity(
   const cityMap = new Map<string, { timezone: string; count: number }>();
 
   for (const sub of subscribers) {
-    const cityField = sub.custom_fields?.find((f) => f.name === "city");
+    const cityField = sub.custom_fields?.find((f) => f.name === "weather_city");
     const tzField = sub.custom_fields?.find((f) => f.name === "timezone");
 
     if (!cityField?.value) continue;

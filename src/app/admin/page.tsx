@@ -22,7 +22,7 @@ export default async function AdminPage({
   // Unique cities from subscribers that aren't in the curated list = dynamically created pages
   const subscriberCities = new Set<string>();
   for (const sub of subscribers) {
-    const cityField = sub.custom_fields?.find((f) => f.name === "city");
+    const cityField = sub.custom_fields?.find((f) => f.name === "weather_city");
     if (cityField?.value) {
       const slug = cityField.value.toLowerCase().replace(/[^a-z0-9]+/g, "-");
       if (!curatedCitySlugs.includes(slug)) subscriberCities.add(slug);
@@ -46,7 +46,7 @@ export default async function AdminPage({
     }
 
     // City
-    const cityField = sub.custom_fields?.find((f) => f.name === "city");
+    const cityField = sub.custom_fields?.find((f) => f.name === "weather_city");
     const city = cityField?.value || "Unknown";
     const existing = cityMap.get(city);
     if (existing) {
@@ -84,25 +84,25 @@ export default async function AdminPage({
 
         {/* Overview cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-          <StatCard label="Total Subscribers" value={subscribers.length} />
-          <StatCard label="Active" value={statusCount.active} color="text-emerald-400" />
-          <StatCard label="Pending" value={statusCount.pending} color="text-amber-400" />
-          <StatCard label="Sub Cities" value={cityMap.size} color="text-blue-400" />
+          <StatCard label="Total Subscribers" value={subscribers.length} tooltip="All subscribers across all statuses in Beehiiv" />
+          <StatCard label="Active" value={statusCount.active} color="text-emerald-400" tooltip="Confirmed subscribers who will receive emails" />
+          <StatCard label="Pending" value={statusCount.pending} color="text-amber-400" tooltip="Subscribers waiting for email verification (if double opt-in is on)" />
+          <StatCard label="Sub Cities" value={cityMap.size} color="text-blue-400" tooltip="Unique cities across all subscribers" />
         </div>
 
         {/* Pages */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-          <StatCard label="Total Pages" value={totalPages} color="text-purple-400" />
-          <StatCard label="Curated Cities" value={curatedCitySlugs.length} />
-          <StatCard label="Dynamic Cities" value={subscriberCities.size} color="text-cyan-400" />
-          <StatCard label="Static Pages" value={4} />
+          <StatCard label="Total Pages" value={totalPages} color="text-purple-400" tooltip="All indexable pages on the site (curated + dynamic + static)" />
+          <StatCard label="Curated Cities" value={curatedCitySlugs.length} tooltip="Pre-defined cities in the sitemap with SEO-optimized pages" />
+          <StatCard label="Dynamic Cities" value={subscriberCities.size} color="text-cyan-400" tooltip="City pages created on-demand when users search for them" />
+          <StatCard label="Static Pages" value={4} tooltip="Home, About, Privacy, and 404 pages" />
         </div>
 
         {/* Forecast type breakdown */}
         <div className="grid grid-cols-3 gap-4 mb-10">
-          <StatCard label="Tomorrow's Weather" value={forecastTypeCount.tomorrow} color="text-blue-400" />
-          <StatCard label="Today's Weather" value={forecastTypeCount.today} color="text-cyan-400" />
-          <StatCard label="Not Set" value={forecastTypeCount.unknown} color="text-white/30" />
+          <StatCard label="Tomorrow's Weather" value={forecastTypeCount.tomorrow} color="text-blue-400" tooltip="Subscribers who chose to receive tomorrow's forecast (default 8pm delivery)" />
+          <StatCard label="Today's Weather" value={forecastTypeCount.today} color="text-cyan-400" tooltip="Subscribers who chose to receive today's forecast (default 6am delivery)" />
+          <StatCard label="Not Set" value={forecastTypeCount.unknown} color="text-white/30" tooltip="Subscribers without a forecast type — likely subscribed via Beehiiv directly" />
         </div>
 
         {/* Cities table */}
@@ -194,7 +194,7 @@ export default async function AdminPage({
                     .sort((a, b) => (b.created || 0) - (a.created || 0))
                     .slice(0, 20)
                     .map((sub) => {
-                      const city = sub.custom_fields?.find((f) => f.name === "city")?.value || "—";
+                      const city = sub.custom_fields?.find((f) => f.name === "weather_city")?.value || "—";
                       const ft = sub.custom_fields?.find((f) => f.name === "forecast_type")?.value || "—";
                       const date = sub.created
                         ? new Date(sub.created * 1000).toLocaleDateString("en-US", {
@@ -243,19 +243,27 @@ function StatCard({
   label,
   value,
   color = "text-white",
+  tooltip,
 }: {
   label: string;
   value: number;
   color?: string;
+  tooltip?: string;
 }) {
   return (
-    <div className="bg-white/5 border border-white/8 rounded-2xl p-5">
+    <div className="bg-white/5 border border-white/8 rounded-2xl p-5 relative group">
       <div className="text-[11px] text-white/35 font-semibold uppercase tracking-wider mb-2">
         {label}
       </div>
       <div className={`text-3xl font-extrabold tracking-tight ${color}`}>
         {value}
       </div>
+      {tooltip && (
+        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-slate-800 border border-white/10 rounded-lg text-xs text-white/70 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 shadow-xl">
+          {tooltip}
+          <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-px w-2 h-2 bg-slate-800 border-r border-b border-white/10 rotate-45" />
+        </div>
+      )}
     </div>
   );
 }

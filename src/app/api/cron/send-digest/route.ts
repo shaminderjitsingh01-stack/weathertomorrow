@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
     const weatherCache = new Map<string, CityWeather>();
 
     for (const sub of eligibleSubscribers) {
-      const cityField = sub.custom_fields?.find((f) => f.name === "city");
+      const cityField = sub.custom_fields?.find((f) => f.name === "weather_city");
       const city = cityField?.value || "Unknown";
       if (city === "Unknown" || weatherCache.has(city)) continue;
 
@@ -94,7 +94,7 @@ export async function GET(request: NextRequest) {
     const errors: string[] = [];
 
     for (const sub of eligibleSubscribers) {
-      const cityField = sub.custom_fields?.find((f) => f.name === "city");
+      const cityField = sub.custom_fields?.find((f) => f.name === "weather_city");
       const ftField = sub.custom_fields?.find((f) => f.name === "forecast_type");
 
       const city = cityField?.value || "Unknown";

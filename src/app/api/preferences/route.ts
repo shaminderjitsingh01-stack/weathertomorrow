@@ -41,7 +41,7 @@ export async function PUT(request: NextRequest) {
 
     // Update custom fields
     const result = await updateSubscriberCustomFields(subscriber.id, {
-      city: city.trim(),
+      weather_city: city.trim(),
       timezone: timezone || "UTC",
       send_hour: String(sendHour ?? 20),
       forecast_type: forecastType || "tomorrow",

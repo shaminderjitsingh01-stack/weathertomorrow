@@ -76,7 +76,7 @@ export default async function PreferencesPage({
   try {
     const subscriber = await getSubscriberByEmail(email);
     if (subscriber) {
-      const cityField = subscriber.custom_fields?.find((f) => f.name === "city");
+      const cityField = subscriber.custom_fields?.find((f) => f.name === "weather_city");
       const tzField = subscriber.custom_fields?.find((f) => f.name === "timezone");
       const hourField = subscriber.custom_fields?.find((f) => f.name === "send_hour");
       const ftField = subscriber.custom_fields?.find((f) => f.name === "forecast_type");
