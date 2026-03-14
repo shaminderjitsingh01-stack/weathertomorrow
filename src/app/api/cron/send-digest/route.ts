@@ -2,17 +2,23 @@ import { NextRequest, NextResponse } from "next/server";
 import {
   getAllSubscribers,
   getSubscribersForCurrentHour,
-  groupSubscribersByCity,
-  createAndSendPost,
 } from "@/lib/beehiiv";
 import { getWeatherByCoords, searchLocations } from "@/lib/weather";
 import { getCityBySlug } from "@/lib/cities";
 import { generateWeatherEmailHtml, generateSubjectLine } from "@/lib/email-template";
+import { sendWeatherEmail } from "@/lib/resend";
 
 export const maxDuration = 300; // 5 min timeout for Vercel Pro
 
+interface CityWeather {
+  cityName: string;
+  country: string;
+  today: Awaited<ReturnType<typeof getWeatherByCoords>>["today"];
+  tomorrow: Awaited<ReturnType<typeof getWeatherByCoords>>["tomorrow"];
+}
+
 export async function GET(request: NextRequest) {
-  // Verify cron secret to prevent unauthorized access
+  // Verify cron secret
   const authHeader = request.headers.get("authorization");
   const cronSecret = process.env.CRON_SECRET;
 
@@ -39,18 +45,16 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // 3. Group by city
-    const cityGroups = groupSubscribersByCity(eligibleSubscribers);
+    // 3. Collect unique cities and fetch weather for each (cache to avoid duplicate fetches)
+    const weatherCache = new Map<string, CityWeather>();
 
-    let sent = 0;
-    let failed = 0;
-    const errors: string[] = [];
+    for (const sub of eligibleSubscribers) {
+      const cityField = sub.custom_fields?.find((f) => f.name === "city");
+      const city = cityField?.value || "Unknown";
+      if (city === "Unknown" || weatherCache.has(city)) continue;
 
-    // 4. For each city, fetch weather and send digest
-    for (const [cityName, cityInfo] of cityGroups) {
       try {
-        // Resolve city coordinates
-        const slug = cityName.toLowerCase().replace(/\s+/g, "-");
+        const slug = city.toLowerCase().replace(/\s+/g, "-");
         let lat: number, lon: number, tz: string, country: string;
 
         const curated = getCityBySlug(slug);
@@ -60,51 +64,72 @@ export async function GET(request: NextRequest) {
           tz = curated.timezone;
           country = curated.country;
         } else {
-          // Dynamic geocoding
-          const results = await searchLocations(cityName);
-          if (results.length === 0) {
-            errors.push(`Could not geocode: ${cityName}`);
-            failed++;
-            continue;
-          }
+          const results = await searchLocations(city);
+          if (results.length === 0) continue;
           lat = results[0].latitude;
           lon = results[0].longitude;
           tz = results[0].timezone;
           country = results[0].country;
         }
 
-        // Fetch weather
         const weather = await getWeatherByCoords(lat, lon, tz);
-
-        // Generate email (TODO: respect per-subscriber forecastType preference)
-        const html = generateWeatherEmailHtml(
-          cityName,
+        weatherCache.set(city, {
+          cityName: city,
           country,
-          weather.today,
-          weather.tomorrow,
-          "tomorrow"
+          today: weather.today,
+          tomorrow: weather.tomorrow,
+        });
+
+        // Rate limit weather API
+        await new Promise((r) => setTimeout(r, 500));
+      } catch (err) {
+        console.error(`Failed to fetch weather for ${city}:`, err);
+      }
+    }
+
+    // 4. Send personalized email to each subscriber via Resend
+    let sent = 0;
+    let failed = 0;
+    const errors: string[] = [];
+
+    for (const sub of eligibleSubscribers) {
+      const cityField = sub.custom_fields?.find((f) => f.name === "city");
+      const ftField = sub.custom_fields?.find((f) => f.name === "forecast_type");
+
+      const city = cityField?.value || "Unknown";
+      const forecastType = (ftField?.value as "today" | "tomorrow") || "tomorrow";
+      const cityWeather = weatherCache.get(city);
+
+      if (!cityWeather) {
+        errors.push(`No weather data for ${sub.email} (${city})`);
+        failed++;
+        continue;
+      }
+
+      try {
+        // Generate personalized email for this subscriber
+        const html = generateWeatherEmailHtml(
+          cityWeather.cityName,
+          cityWeather.country,
+          cityWeather.today,
+          cityWeather.tomorrow,
+          forecastType
         );
 
-        const subject = generateSubjectLine(cityName, weather.tomorrow, "tomorrow");
+        const primaryDay = forecastType === "today" ? cityWeather.today : cityWeather.tomorrow;
+        const subject = generateSubjectLine(cityWeather.cityName, primaryDay, forecastType);
 
-        // Send via Beehiiv
-        const result = await createAndSendPost(
-          subject,
-          html,
-          `${Math.round(weather.tomorrow.temperatureMax)}° tomorrow in ${cityName}`
-        );
+        // Send via Resend
+        const result = await sendWeatherEmail(sub.email, subject, html);
 
         if (result.success) {
           sent++;
         } else {
-          errors.push(`Failed to send for ${cityName}: ${result.error}`);
+          errors.push(`${sub.email}: ${result.error}`);
           failed++;
         }
-
-        // Rate limit: wait 1s between cities to avoid API limits
-        await new Promise((r) => setTimeout(r, 1000));
       } catch (err) {
-        errors.push(`Error for ${cityName}: ${err instanceof Error ? err.message : "Unknown"}`);
+        errors.push(`${sub.email}: ${err instanceof Error ? err.message : "Unknown"}`);
         failed++;
       }
     }
@@ -113,7 +138,7 @@ export async function GET(request: NextRequest) {
       message: "Digest complete",
       totalSubscribers: allSubscribers.length,
       eligibleThisHour: eligibleSubscribers.length,
-      citiesProcessed: cityGroups.size,
+      citiesFetched: weatherCache.size,
       sent,
       failed,
       errors: errors.length > 0 ? errors : undefined,
