@@ -36,7 +36,11 @@ export function getAllPosts(): BlogPostMeta[] {
     };
   });
 
-  // Sort newest first
+  // Sort newest first.
+  // Note: All posts are shown regardless of date. The frontmatter date is used
+  // for display and sorting only. Since the site is statically built, future-dated
+  // posts become visible after deployment — there's no runtime date filtering.
+  // To "schedule" a post, deploy on or after its publish date.
   return posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 }
 
