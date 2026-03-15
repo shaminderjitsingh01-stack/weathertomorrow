@@ -257,6 +257,9 @@ export default function LoginPage() {
                     );
                   })}
                 </select>
+                <p className="text-[10px] text-white/20 mt-1.5">
+                  Your local time ({typeof window !== "undefined" ? Intl.DateTimeFormat().resolvedOptions().timeZone.replace(/_/g, " ") : ""})
+                </p>
               </div>
 
               <button

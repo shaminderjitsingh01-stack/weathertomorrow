@@ -178,6 +178,9 @@ export default function PreferencesForm({
                 </option>
               ))}
             </select>
+            <p className="text-[10px] text-white/20 mt-1.5">
+              Your local time ({detectedTimezone.replace(/_/g, " ")})
+            </p>
           </div>
 
           {/* Save button */}
