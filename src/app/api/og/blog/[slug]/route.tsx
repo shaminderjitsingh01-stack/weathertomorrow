@@ -1,8 +1,5 @@
 import { ImageResponse } from "@vercel/og";
 import { NextRequest } from "next/server";
-import { getPostBySlug } from "@/lib/blog";
-
-export const runtime = "edge";
 
 const CATEGORY_COLORS: Record<string, string> = {
   "City Guide": "#22c55e",
@@ -15,11 +12,17 @@ export async function GET(
   { params }: { params: Promise<{ slug: string }> }
 ) {
   const { slug } = await params;
-  const post = getPostBySlug(slug);
 
-  const title = post?.title || "Weather Tomorrow Blog";
-  const category = post?.category || "Article";
-  const readTime = post?.readTime || 3;
+  // Parse title from slug since we can't read filesystem in edge/serverless
+  const title = slug
+    .replace(/-/g, " ")
+    .replace(/\b\w/g, (c) => c.toUpperCase())
+    .replace(/\?/g, "?");
+
+  // Detect category from slug patterns
+  const isCity = slug.includes("weather-") && (slug.includes("january") || slug.includes("february") || slug.includes("march") || slug.includes("april") || slug.includes("may") || slug.includes("june") || slug.includes("july") || slug.includes("august") || slug.includes("september") || slug.includes("october") || slug.includes("november") || slug.includes("december"));
+  const category = isCity ? "City Guide" : "Weather Tips";
+  const readTime = 3;
   const categoryColor = CATEGORY_COLORS[category] || "#3b82f6";
 
   return new ImageResponse(
