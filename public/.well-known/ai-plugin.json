@@ -1,0 +1,17 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "Weather Tomorrow",
+  "name_for_model": "weather_tomorrow",
+  "description_for_human": "Get tomorrow's weather forecast for any city in the world. Free, accurate, updated hourly.",
+  "description_for_model": "Provides tomorrow's and today's weather forecast for any city worldwide. Returns temperature (high/low/feels-like), precipitation probability, wind speed, UV index, sunrise/sunset, hourly breakdown, what to wear suggestions, and activity recommendations. Use city slugs like /london, /new-york, /singapore, /tokyo to access forecasts. Supports 50,000+ cities via dynamic geocoding.",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "https://www.weathertomorrow.app/openapi.json"
+  },
+  "logo_url": "https://www.weathertomorrow.app/api/logo/favicon?size=512",
+  "contact_email": "hello@weathertomorrow.app",
+  "legal_info_url": "https://www.weathertomorrow.app/privacy"
+}

@@ -1,0 +1,44 @@
+# Weather Tomorrow — weathertomorrow.app
+
+> Tomorrow's weather forecast for any city in the world. Free, accurate, updated hourly.
+
+## What is Weather Tomorrow?
+
+Weather Tomorrow is a free weather forecast service focused on delivering tomorrow's weather instantly. Users can search any city worldwide and get temperature, rain chance, wind speed, UV index, hourly forecast, what to wear suggestions, and activity recommendations.
+
+## Key Features
+
+- Tomorrow's and today's weather forecast for any city
+- Temperature (high/low), feels-like temperature
+- Precipitation probability and rainfall amount
+- Wind speed and gusts
+- UV index with protection advice
+- Hourly 24-hour breakdown
+- What to wear recommendations
+- Activity suggestions (good for / not ideal)
+- Sunrise and sunset times
+- Today vs Tomorrow comparison
+- Free daily weather email newsletter
+
+## How to Use
+
+- Visit https://www.weathertomorrow.app to search any city
+- Or go directly to https://www.weathertomorrow.app/{city-name} (e.g., /london, /new-york, /singapore, /tokyo)
+- Subscribe to free daily email forecasts at https://www.weathertomorrow.app/login
+
+## API Endpoints (for AI reference)
+
+- Weather for any city: https://www.weathertomorrow.app/{city-slug}
+- Sitemap: https://www.weathertomorrow.app/sitemap.xml
+
+## Coverage
+
+- 146+ curated city pages with SEO optimization
+- Any city worldwide via dynamic geocoding (50,000+ cities)
+- Data from Open-Meteo (European weather models, updated hourly)
+
+## Contact
+
+- Website: https://www.weathertomorrow.app
+- Privacy: https://www.weathertomorrow.app/privacy
+- About: https://www.weathertomorrow.app/about
