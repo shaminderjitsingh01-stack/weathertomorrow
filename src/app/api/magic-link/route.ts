@@ -15,10 +15,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "City is required" }, { status: 400 });
     }
 
-    // Check if subscriber exists — if not, subscribe them with their preferences
+    // Check if subscriber exists
     const subscriber = await getSubscriberByEmail(email);
 
     if (!subscriber) {
+      // New subscriber — create with their preferences
       await createSubscriber(
         email,
         city.trim(),
@@ -26,6 +27,15 @@ export async function POST(request: NextRequest) {
         sendHour ?? 20,
         forecastType || "tomorrow"
       );
+    } else {
+      // Existing subscriber — update their preferences with the new values
+      const { updateSubscriberCustomFields } = await import("@/lib/beehiiv");
+      await updateSubscriberCustomFields(subscriber.id, {
+        weather_city: city.trim(),
+        timezone: timezone || "UTC",
+        send_hour: String(sendHour ?? 20),
+        forecast_type: forecastType || "tomorrow",
+      });
     }
 
     // Generate magic link
