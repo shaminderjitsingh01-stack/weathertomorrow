@@ -4,6 +4,7 @@ import { useState } from "react";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
+  const [city, setCity] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "sent" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -16,6 +17,12 @@ export default function LoginPage() {
       return;
     }
 
+    if (!city.trim()) {
+      setErrorMsg("Please enter your city.");
+      setStatus("error");
+      return;
+    }
+
     setStatus("loading");
     setErrorMsg("");
 
@@ -23,7 +30,7 @@ export default function LoginPage() {
       const res = await fetch("/api/magic-link", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, city: city.trim() }),
       });
 
       const data = await res.json();
@@ -66,32 +73,51 @@ export default function LoginPage() {
                 <path d="M16 19l2 2 4-4" />
               </svg>
             </div>
-            <h1 className="text-xl font-bold mb-2">Check your inbox</h1>
+            <h1 className="text-xl font-bold mb-2">Check your email</h1>
             <p className="text-sm text-white/50 mb-1">
-              We sent a login link to
+              We sent a link to
             </p>
             <p className="text-sm font-semibold text-white/80 mb-4">{email}</p>
             <p className="text-xs text-white/30">
-              The link expires in 1 hour. Check your spam folder if you don&apos;t see it.
+              Click the link to manage your {city} weather subscription. Check spam if you don&apos;t see it.
             </p>
           </div>
         ) : (
           <div className="card-elevated rounded-3xl p-8">
-            <h1 className="text-xl font-bold text-center mb-2">Manage your subscription</h1>
+            <h1 className="text-xl font-bold text-center mb-2">Get your daily forecast</h1>
             <p className="text-sm text-white/40 text-center mb-6">
-              Enter your email to receive a login link — no password needed.
+              Enter your email and city to subscribe or manage your existing subscription.
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-4">
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="your@email.com"
-                className="w-full search-input rounded-xl px-4 py-3.5 text-white placeholder-white/25 focus:outline-none text-sm font-medium"
-                disabled={status === "loading"}
-                autoFocus
-              />
+              <div>
+                <label className="block text-[11px] text-white/40 font-semibold uppercase tracking-wider mb-2">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="your@email.com"
+                  className="w-full search-input rounded-xl px-4 py-3.5 text-white placeholder-white/25 focus:outline-none text-sm font-medium"
+                  disabled={status === "loading"}
+                  autoFocus
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] text-white/40 font-semibold uppercase tracking-wider mb-2">
+                  City
+                </label>
+                <input
+                  type="text"
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  placeholder="e.g. Singapore, London, New York"
+                  className="w-full search-input rounded-xl px-4 py-3.5 text-white placeholder-white/25 focus:outline-none text-sm font-medium"
+                  disabled={status === "loading"}
+                />
+              </div>
 
               <button
                 type="submit"
@@ -104,7 +130,7 @@ export default function LoginPage() {
                     Sending...
                   </span>
                 ) : (
-                  "Send me a login link"
+                  "Continue"
                 )}
               </button>
 
@@ -114,7 +140,7 @@ export default function LoginPage() {
             </form>
 
             <p className="text-[10px] text-white/20 text-center mt-4">
-              Only works for existing subscribers.
+              New here? You&apos;ll be subscribed automatically. Already subscribed? We&apos;ll send you a link to manage your preferences.
             </p>
           </div>
         )}

@@ -12,7 +12,7 @@ export default function Footer() {
           Privacy
         </Link>
         <Link href="/login" className="hover:text-white/40 transition-colors">
-          Login
+          Sign In
         </Link>
       </div>
       <p className="text-[10px] text-white/10 text-center">
