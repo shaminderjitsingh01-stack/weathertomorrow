@@ -25,12 +25,12 @@ export default function Header({
   lastUpdated?: string;
 }) {
   return (
-    <header className={`${isLanding ? "pt-16 sm:pt-20 pb-4 mb-8" : "pt-5 mb-5"}`}>
+    <header className={`${isLanding ? "pt-12 sm:pt-16 md:pt-20 pb-4 mb-6 sm:mb-8" : "pt-5 mb-5"}`}>
       {isLanding ? (
         <div className="text-center">
-          <div className="flex items-center justify-center gap-3 sm:gap-4 mb-3">
-            <LogoIcon size={44} />
-            <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight">
+          <div className="flex items-center justify-center gap-2.5 sm:gap-3 md:gap-4 mb-3">
+            <LogoIcon size={36} />
+            <h1 className="text-2xl sm:text-3xl md:text-5xl font-extrabold tracking-tight">
               Weather Tomorrow
             </h1>
           </div>

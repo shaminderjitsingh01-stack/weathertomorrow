@@ -74,8 +74,8 @@ export default async function AdminPage({
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
-      <div className="max-w-4xl mx-auto px-6 py-10">
-        <h1 className="text-2xl font-extrabold tracking-tight mb-1">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
+        <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight mb-1">
           Weather Tomorrow — Admin
         </h1>
         <p className="text-sm text-white/30 mb-8">
@@ -83,7 +83,7 @@ export default async function AdminPage({
         </p>
 
         {/* Overview cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-8 sm:mb-10">
           <StatCard label="Total Subscribers" value={subscribers.length} tooltip="All subscribers across all statuses in Beehiiv" />
           <StatCard label="Active" value={statusCount.active} color="text-emerald-400" tooltip="Confirmed subscribers who will receive emails" />
           <StatCard label="Pending" value={statusCount.pending} color="text-amber-400" tooltip="Subscribers waiting for email verification (if double opt-in is on)" />
@@ -91,7 +91,7 @@ export default async function AdminPage({
         </div>
 
         {/* Pages */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-8 sm:mb-10">
           <StatCard label="Total Pages" value={totalPages} color="text-purple-400" tooltip="All indexable pages on the site (curated + dynamic + static)" />
           <StatCard label="Curated Cities" value={curatedCitySlugs.length} tooltip="Pre-defined cities in the sitemap with SEO-optimized pages" />
           <StatCard label="Dynamic Cities" value={subscriberCities.size} color="text-cyan-400" tooltip="City pages created on-demand when users search for them" />
@@ -99,7 +99,7 @@ export default async function AdminPage({
         </div>
 
         {/* Forecast type breakdown */}
-        <div className="grid grid-cols-3 gap-4 mb-10">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-10">
           <StatCard label="Tomorrow's Weather" value={forecastTypeCount.tomorrow} color="text-blue-400" tooltip="Subscribers who chose to receive tomorrow's forecast (default 8pm delivery)" />
           <StatCard label="Today's Weather" value={forecastTypeCount.today} color="text-cyan-400" tooltip="Subscribers who chose to receive today's forecast (default 6am delivery)" />
           <StatCard label="Not Set" value={forecastTypeCount.unknown} color="text-white/30" tooltip="Subscribers without a forecast type — likely subscribed via Beehiiv directly" />
@@ -108,8 +108,8 @@ export default async function AdminPage({
         {/* Cities table */}
         <div className="mb-10">
           <h2 className="text-lg font-bold mb-4">Subscribers by City</h2>
-          <div className="bg-white/5 rounded-2xl border border-white/8 overflow-hidden">
-            <table className="w-full text-sm">
+          <div className="bg-white/5 rounded-2xl border border-white/8 overflow-x-auto">
+            <table className="w-full text-sm min-w-[400px]">
               <thead>
                 <tr className="border-b border-white/8">
                   <th className="text-left px-5 py-3 text-white/40 font-semibold text-xs uppercase tracking-wider">City</th>
@@ -145,8 +145,8 @@ export default async function AdminPage({
         {/* Sources table */}
         <div className="mb-10">
           <h2 className="text-lg font-bold mb-4">Acquisition Sources</h2>
-          <div className="bg-white/5 rounded-2xl border border-white/8 overflow-hidden">
-            <table className="w-full text-sm">
+          <div className="bg-white/5 rounded-2xl border border-white/8 overflow-x-auto">
+            <table className="w-full text-sm min-w-[300px]">
               <thead>
                 <tr className="border-b border-white/8">
                   <th className="text-left px-5 py-3 text-white/40 font-semibold text-xs uppercase tracking-wider">Source</th>
@@ -171,8 +171,8 @@ export default async function AdminPage({
             Recent Subscribers
             <span className="text-white/30 font-normal text-sm ml-2">(last 20)</span>
           </h2>
-          <div className="bg-white/5 rounded-2xl border border-white/8 overflow-hidden">
-            <table className="w-full text-sm">
+          <div className="bg-white/5 rounded-2xl border border-white/8 overflow-x-auto">
+            <table className="w-full text-sm min-w-[600px]">
               <thead>
                 <tr className="border-b border-white/8">
                   <th className="text-left px-5 py-3 text-white/40 font-semibold text-xs uppercase tracking-wider">Email</th>
@@ -251,11 +251,11 @@ function StatCard({
   tooltip?: string;
 }) {
   return (
-    <div className="bg-white/5 border border-white/8 rounded-2xl p-5 relative group">
-      <div className="text-[11px] text-white/35 font-semibold uppercase tracking-wider mb-2">
+    <div className="bg-white/5 border border-white/8 rounded-2xl p-3.5 sm:p-5 relative group">
+      <div className="text-[10px] sm:text-[11px] text-white/35 font-semibold uppercase tracking-wider mb-1.5 sm:mb-2">
         {label}
       </div>
-      <div className={`text-3xl font-extrabold tracking-tight ${color}`}>
+      <div className={`text-2xl sm:text-3xl font-extrabold tracking-tight ${color}`}>
         {value}
       </div>
       {tooltip && (

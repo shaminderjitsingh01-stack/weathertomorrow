@@ -204,9 +204,16 @@ body {
   position: absolute;
   top: 0;
   bottom: 0;
-  width: 40px;
+  width: 20px;
   z-index: 1;
   pointer-events: none;
+}
+
+@media (min-width: 640px) {
+  .ticker-container::before,
+  .ticker-container::after {
+    width: 40px;
+  }
 }
 
 .ticker-container::before {

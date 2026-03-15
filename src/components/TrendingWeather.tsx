@@ -51,27 +51,27 @@ export default async function TrendingWeather() {
   return (
     <div>
       <p className="section-label mb-3 text-center">Trending Right Now</p>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+      <div className="grid grid-cols-3 gap-2">
         {trends.map((trend) => (
           <Link
             key={trend.label}
             href={`/${trend.city.slug}`}
             className="card-interactive rounded-2xl p-3 text-center group"
           >
-            <div className="text-lg mb-1">{trend.emoji}</div>
-            <div className="text-[10px] font-bold uppercase tracking-wider text-white/40 mb-1.5">
+            <div className="text-base sm:text-lg mb-1">{trend.emoji}</div>
+            <div className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-white/40 mb-1.5">
               {trend.label}
             </div>
             <div className="flex justify-center mb-1.5 animate-float">
               <WeatherIcon code={trend.city.weatherCode} size={28} />
             </div>
-            <div className="text-sm font-bold text-white/90 mb-0.5">
+            <div className="text-xs sm:text-sm font-bold text-white/90 mb-0.5">
               {trend.value}
             </div>
-            <div className="text-[11px] font-medium text-white/60 truncate">
+            <div className="text-[10px] sm:text-[11px] font-medium text-white/60 truncate">
               {trend.city.name}
             </div>
-            <div className="text-[9px] text-white/30 mt-0.5">
+            <div className="text-[8px] sm:text-[9px] text-white/30 mt-0.5">
               {trend.sublabel}
             </div>
           </Link>

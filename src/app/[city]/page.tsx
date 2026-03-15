@@ -123,7 +123,7 @@ export default async function CityPage({
     // Graceful error state
     return (
       <div className="min-h-screen weather-default">
-        <div className="max-w-2xl mx-auto px-4 py-4">
+        <div className="max-w-2xl mx-auto px-3 sm:px-4 py-4">
           <Header subtitle={getCityLabel(city)} />
           <div className="mb-5">
             <SearchBar />
@@ -183,7 +183,7 @@ export default async function CityPage({
         <WeatherTicker />
       </Suspense>
 
-      <div className="max-w-2xl mx-auto px-4 py-4">
+      <div className="max-w-2xl mx-auto px-3 sm:px-4 py-4">
         <Header subtitle={label} lastUpdated={lastUpdated} />
 
         <div className="mb-5">

@@ -112,24 +112,24 @@ export default function SubscribeForm({
             <button
               type="button"
               onClick={() => { setForecastType("today"); setSendHour(6); }}
-              className={`flex-1 py-2 rounded-l-lg text-xs font-bold transition-all cursor-pointer ${
+              className={`flex-1 py-2 rounded-l-lg text-[11px] sm:text-xs font-bold transition-all cursor-pointer ${
                 forecastType === "today"
                   ? "bg-white/12 text-white"
                   : "bg-white/4 text-white/30"
               }`}
             >
-              Today&apos;s weather
+              Today&apos;s
             </button>
             <button
               type="button"
               onClick={() => { setForecastType("tomorrow"); setSendHour(20); }}
-              className={`flex-1 py-2 rounded-r-lg text-xs font-bold transition-all cursor-pointer ${
+              className={`flex-1 py-2 rounded-r-lg text-[11px] sm:text-xs font-bold transition-all cursor-pointer ${
                 forecastType === "tomorrow"
                   ? "bg-white/12 text-white"
                   : "bg-white/4 text-white/30"
               }`}
             >
-              Tomorrow&apos;s weather
+              Tomorrow&apos;s
             </button>
           </div>
         </div>

@@ -50,7 +50,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen weather-default">
       <div className="max-w-md mx-auto px-4 py-4">
-        <header className="text-center pt-16 mb-10">
+        <header className="text-center pt-10 sm:pt-16 mb-8 sm:mb-10">
           <a href="/" className="inline-flex items-center gap-2 hover:opacity-80 transition-opacity">
             <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
               <circle cx="22" cy="10" r="7" fill="#FBBF24" opacity="0.85" />
@@ -65,7 +65,7 @@ export default function LoginPage() {
         </header>
 
         {status === "sent" ? (
-          <div className="card-elevated rounded-3xl p-8 text-center">
+          <div className="card-elevated rounded-3xl p-6 sm:p-8 text-center">
             <div className="w-14 h-14 rounded-2xl bg-emerald-500/15 flex items-center justify-center mx-auto mb-4">
               <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M22 10.5V6a2 2 0 00-2-2H4a2 2 0 00-2 2v12a2 2 0 002 2h12.5" />
@@ -83,8 +83,8 @@ export default function LoginPage() {
             </p>
           </div>
         ) : (
-          <div className="card-elevated rounded-3xl p-8">
-            <h1 className="text-xl font-bold text-center mb-2">Get your daily forecast</h1>
+          <div className="card-elevated rounded-3xl p-5 sm:p-8">
+            <h1 className="text-lg sm:text-xl font-bold text-center mb-2">Get your daily forecast</h1>
             <p className="text-sm text-white/40 text-center mb-6">
               Enter your email and city to subscribe or manage your existing subscription.
             </p>

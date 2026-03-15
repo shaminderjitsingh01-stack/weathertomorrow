@@ -134,7 +134,7 @@ export default async function HomePage({
         <WeatherTicker />
       </Suspense>
 
-      <div className="max-w-3xl mx-auto px-4 py-4 relative">
+      <div className="max-w-3xl mx-auto px-3 sm:px-4 py-4 relative">
         {/* Animated weather particles — behind content */}
         <WeatherParticles />
 
@@ -142,7 +142,7 @@ export default async function HomePage({
           <Header isLanding />
 
           {/* Trust indicators */}
-          <div className="flex items-center justify-center gap-4 mb-8">
+          <div className="flex items-center justify-center gap-3 sm:gap-4 mb-6 sm:mb-8">
             <div className="trust-badge rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5">
               <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
               Live Data
@@ -178,7 +178,7 @@ export default async function HomePage({
           {/* Trending weather section */}
           <div className="mt-10">
             <Suspense fallback={
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+              <div className="grid grid-cols-3 gap-2">
                 {[1, 2, 3].map((i) => (
                   <div key={i} className="card rounded-2xl p-3 h-32">
                     <div className="flex flex-col items-center gap-2">

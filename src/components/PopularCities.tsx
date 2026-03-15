@@ -84,25 +84,25 @@ export default async function PopularCities() {
                 <Link
                   key={slug}
                   href={`/${slug}`}
-                  className="card-interactive rounded-2xl p-3.5 group"
+                  className="card-interactive rounded-2xl p-2.5 sm:p-3.5 group"
                 >
                   {weather ? (
-                    <div className="flex flex-col items-center text-center gap-1.5">
+                    <div className="flex flex-col items-center text-center gap-1">
                       <span className="animate-float inline-flex">
                         <WeatherIcon code={weather.weatherCode} size={36} />
                       </span>
-                      <span className="text-sm font-semibold text-white/70 group-hover:text-white/90 transition-colors truncate w-full">
+                      <span className="text-xs sm:text-sm font-semibold text-white/70 group-hover:text-white/90 transition-colors truncate w-full">
                         {city.name}
                       </span>
-                      <span className="text-2xl font-extrabold tracking-tight text-white/90">
+                      <span className="text-xl sm:text-2xl font-extrabold tracking-tight text-white/90">
                         {weather.temp}°
                       </span>
-                      <div className="flex items-center gap-1.5 text-[11px] text-white/35 font-medium">
+                      <div className="flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-[11px] text-white/35 font-medium">
                         <span>H:{weather.temp}°</span>
                         <span className="text-white/15">|</span>
                         <span>L:{weather.tempMin}°</span>
                       </div>
-                      <span className="text-[10px] text-white/30 font-medium truncate w-full">
+                      <span className="text-[9px] sm:text-[10px] text-white/30 font-medium truncate w-full">
                         {getWeatherDescription(weather.weatherCode)}
                       </span>
                     </div>

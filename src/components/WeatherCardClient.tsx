@@ -108,15 +108,15 @@ export default function WeatherCardClient({
   return (
     <div className="space-y-3">
       {/* Main temperature */}
-      <div className="card-elevated rounded-3xl px-6 py-8 text-center">
+      <div className="card-elevated rounded-3xl px-4 sm:px-6 py-6 sm:py-8 text-center">
         <p className="section-label mb-5">{formatDate(day.date)}</p>
 
-        <div className="flex justify-center mb-3">
+        <div className="flex justify-center mb-3 [&>svg]:w-[80px] [&>svg]:h-[80px] sm:[&>svg]:w-[110px] sm:[&>svg]:h-[110px]">
           <WeatherIcon code={day.weatherCode} size={110} />
         </div>
 
         <div className="flex items-baseline justify-center gap-2 mb-1">
-          <span className="text-[5.5rem] font-extrabold tracking-tighter leading-none">
+          <span className="text-6xl sm:text-[5.5rem] font-extrabold tracking-tighter leading-none">
             {Math.round(day.temperatureMax)}°
           </span>
           <div className="flex flex-col items-start gap-0.5">
@@ -129,7 +129,7 @@ export default function WeatherCardClient({
 
         <p className="text-lg font-semibold text-white/85 mb-1">{description}</p>
 
-        <div className="flex items-center justify-center gap-3 text-sm text-white/35">
+        <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-xs sm:text-sm text-white/35">
           <span>Feels {Math.round(day.apparentTemperatureMax)}°/{Math.round(day.apparentTemperatureMin)}°</span>
           {Math.abs(tempDiff) > 1 && (
             <>

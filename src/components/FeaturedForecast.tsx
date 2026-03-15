@@ -72,7 +72,7 @@ export default async function FeaturedForecast() {
   };
 
   return (
-    <div className="card-featured rounded-3xl p-6 sm:p-8">
+    <div className="card-featured rounded-3xl p-4 sm:p-6 md:p-8">
       <div className="flex items-center justify-between mb-1">
         <p className="section-label">Tomorrow&apos;s Spotlight</p>
         <span className="text-[10px] text-white/25 font-semibold uppercase tracking-wider">
@@ -96,7 +96,7 @@ export default async function FeaturedForecast() {
           </p>
 
           <div className="flex items-baseline justify-center sm:justify-start gap-2 mb-1">
-            <span className="text-5xl sm:text-6xl font-extrabold tracking-tighter leading-none">
+            <span className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tighter leading-none">
               {weather.temp}°
             </span>
             <div className="flex flex-col items-start">
@@ -114,7 +114,7 @@ export default async function FeaturedForecast() {
       </div>
 
       {/* Key stats row */}
-      <div className="grid grid-cols-3 gap-3 mt-5 pt-5 border-t border-white/8">
+      <div className="grid grid-cols-3 gap-2 sm:gap-3 mt-4 sm:mt-5 pt-4 sm:pt-5 border-t border-white/8">
         <div className="text-center">
           <p className="text-[10px] text-white/30 font-semibold uppercase tracking-wider mb-1">
             Rain

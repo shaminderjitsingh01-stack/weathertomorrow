@@ -4,7 +4,7 @@ export default function Footer() {
   return (
     <footer className="mt-12 pb-8 space-y-4">
       <div className="divider" />
-      <div className="flex flex-wrap justify-center gap-6 pt-3 text-[11px] font-semibold text-white/20 uppercase tracking-wider">
+      <div className="flex flex-wrap justify-center gap-4 sm:gap-6 pt-3 text-[11px] font-semibold text-white/20 uppercase tracking-wider">
         <Link href="/about" className="hover:text-white/40 transition-colors">
           About
         </Link>

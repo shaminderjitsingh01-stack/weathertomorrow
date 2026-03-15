@@ -99,7 +99,7 @@ export default function SearchBar() {
       </div>
 
       {isOpen && results.length > 0 && (
-        <div className="absolute top-full mt-2 w-full bg-slate-900/95 backdrop-blur-xl border border-white/15 shadow-2xl rounded-xl overflow-hidden z-50">
+        <div className="absolute top-full mt-2 w-full bg-slate-900/95 backdrop-blur-xl border border-white/15 shadow-2xl rounded-xl overflow-hidden z-50 max-h-[60vh] overflow-y-auto">
           {results.map((result, i) => (
             <button
               key={i}
