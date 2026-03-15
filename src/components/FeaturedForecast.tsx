@@ -3,24 +3,31 @@ import { getWeatherDescription } from "@/lib/weather";
 import WeatherIcon from "./WeatherIcon";
 import { LANDING_CITIES, type CityWeatherSummary } from "@/lib/landing-weather";
 
-// Pick a spotlight city based on UTC hour to rotate through regions
-function getSpotlightCity(): typeof LANDING_CITIES[number] {
-  const utcHour = new Date().getUTCHours();
+// Rotate through major global cities every 2 hours
+// Cities are ordered so each appears during its region's relevant hours
+const SPOTLIGHT_ROTATION = [
+  { slug: "sydney", name: "Sydney", country: "AU", lat: -33.8688, lon: 151.2093 },       // 00:00 UTC
+  { slug: "tokyo", name: "Tokyo", country: "JP", lat: 35.6762, lon: 139.6503 },          // 02:00 UTC
+  { slug: "singapore", name: "Singapore", country: "SG", lat: 1.3521, lon: 103.8198 },   // 04:00 UTC
+  { slug: "dubai", name: "Dubai", country: "AE", lat: 25.2048, lon: 55.2708 },           // 06:00 UTC
+  { slug: "mumbai", name: "Mumbai", country: "IN", lat: 19.076, lon: 72.8777 },          // 08:00 UTC
+  { slug: "istanbul", name: "Istanbul", country: "TR", lat: 41.0082, lon: 28.9784 },     // 10:00 UTC
+  { slug: "london", name: "London", country: "GB", lat: 51.5074, lon: -0.1278 },         // 12:00 UTC
+  { slug: "paris", name: "Paris", country: "FR", lat: 48.8566, lon: 2.3522 },            // 14:00 UTC
+  { slug: "new-york", name: "New York", country: "US", lat: 40.7128, lon: -74.006 },     // 16:00 UTC
+  { slug: "los-angeles", name: "Los Angeles", country: "US", lat: 34.0522, lon: -118.2437 }, // 18:00 UTC
+  { slug: "sao-paulo", name: "São Paulo", country: "BR", lat: -23.5505, lon: -46.6333 }, // 20:00 UTC
+  { slug: "mexico-city", name: "Mexico City", country: "MX", lat: 19.4326, lon: -99.1332 }, // 22:00 UTC
+];
 
-  // Americas (UTC 12-20 = morning-evening EST/PST)
-  if (utcHour >= 12 && utcHour < 20) {
-    return LANDING_CITIES[0]; // New York
-  }
-  // Europe/Africa (UTC 6-14 = morning-evening CET)
-  if (utcHour >= 6 && utcHour < 12) {
-    return LANDING_CITIES[1]; // London
-  }
-  // Asia/Oceania (UTC 0-8 = morning-evening JST/SGT)
-  return LANDING_CITIES[2]; // Tokyo
+function getSpotlightCity() {
+  const utcHour = new Date().getUTCHours();
+  const index = Math.floor(utcHour / 2) % SPOTLIGHT_ROTATION.length;
+  return SPOTLIGHT_ROTATION[index];
 }
 
 async function fetchSpotlightWeather(
-  city: typeof LANDING_CITIES[number]
+  city: typeof SPOTLIGHT_ROTATION[number]
 ): Promise<CityWeatherSummary | null> {
   try {
     const params = new URLSearchParams({
