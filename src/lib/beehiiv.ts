@@ -108,7 +108,7 @@ export async function getSubscriberByEmail(
   const pubId = getPublicationId();
 
   const res = await fetch(
-    `${BEEHIIV_API_URL}/publications/${pubId}/subscriptions?email=${encodeURIComponent(email)}`,
+    `${BEEHIIV_API_URL}/publications/${pubId}/subscriptions?email=${encodeURIComponent(email)}&expand[]=custom_fields`,
     { headers: getHeaders() }
   );
 
