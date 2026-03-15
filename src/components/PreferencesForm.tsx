@@ -92,7 +92,19 @@ export default function PreferencesForm({
           </div>
         </div>
 
+        {/* Current subscription summary */}
+        <div className="mt-4 bg-white/5 rounded-xl p-4 space-y-2">
+          <p className="text-[10px] text-white/30 font-semibold uppercase tracking-wider">Current Subscription</p>
+          <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
+            <span className="text-white/50">City: <span className="text-white/80 font-semibold">{initialCity || "Not set"}</span></span>
+            <span className="text-white/50">Type: <span className="text-white/80 font-semibold">{initialForecastType === "today" ? "Today's forecast" : "Tomorrow's forecast"}</span></span>
+            <span className="text-white/50">Time: <span className="text-white/80 font-semibold">{initialSendHour === 0 ? "12 AM" : initialSendHour < 12 ? `${initialSendHour} AM` : initialSendHour === 12 ? "12 PM" : `${initialSendHour - 12} PM`}</span></span>
+          </div>
+        </div>
+
         <div className="divider my-5" />
+
+        <p className="text-[10px] text-white/30 font-semibold uppercase tracking-wider mb-3">Update Preferences</p>
 
         <form onSubmit={handleSave} className="space-y-5">
           {/* City */}
