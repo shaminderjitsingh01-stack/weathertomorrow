@@ -5,9 +5,53 @@ import { useState, useEffect, useRef } from "react";
 export default function ExitIntentPopup() {
   const [show, setShow] = useState(false);
   const [email, setEmail] = useState("");
+  const [city, setCity] = useState("");
+  const [forecastType, setForecastType] = useState<"today" | "tomorrow">("tomorrow");
+  const [sendHour, setSendHour] = useState(20);
+  const [cityResults, setCityResults] = useState<{ name: string; country: string; admin1?: string }[]>([]);
+  const [showCityDropdown, setShowCityDropdown] = useState(false);
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
+  const cityRef = useRef<HTMLDivElement>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>(null);
   const hasShown = useRef(false);
+
+  // City autocomplete
+  useEffect(() => {
+    if (city.length < 2) { setCityResults([]); setShowCityDropdown(false); return; }
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/search?q=${encodeURIComponent(city)}`);
+        if (res.ok) {
+          const data = await res.json();
+          setCityResults(data.slice(0, 5));
+          setShowCityDropdown(data.length > 0);
+        }
+      } catch { /* silent */ }
+    }, 300);
+  }, [city]);
+
+  // Close city dropdown on click outside
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (cityRef.current && !cityRef.current.contains(e.target as Node)) setShowCityDropdown(false);
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Auto-detect city from URL
+  useEffect(() => {
+    if (show && !city) {
+      const path = window.location.pathname;
+      if (path.length > 1) {
+        const slug = path.slice(1);
+        const name = slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+        setCity(name);
+      }
+    }
+  }, [show, city]);
 
   useEffect(() => {
     // Don't show if already subscribed or dismissed this session
@@ -68,25 +112,24 @@ export default function ExitIntentPopup() {
       return;
     }
 
+    if (!city.trim()) {
+      setErrorMsg("Please enter your city.");
+      setStatus("error");
+      return;
+    }
+
     setStatus("loading");
     setErrorMsg("");
 
     try {
-      // Detect city from current page URL
-      const path = window.location.pathname;
-      const citySlug = path.length > 1 ? path.slice(1) : "";
-      const cityName = citySlug
-        ? citySlug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
-        : "Your city";
-
       const res = await fetch("/api/magic-link", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email,
-          city: cityName,
-          forecastType: "tomorrow",
-          sendHour: 20,
+          city: city.trim(),
+          forecastType,
+          sendHour,
           timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         }),
       });
@@ -165,10 +208,73 @@ export default function ExitIntentPopup() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="your@email.com"
-                className="w-full bg-white/8 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/25 focus:outline-none focus:border-white/20 text-sm font-medium"
+                className="w-full bg-white/8 border border-white/10 rounded-xl px-4 py-2.5 text-white placeholder-white/25 focus:outline-none focus:border-white/20 text-sm font-medium"
                 disabled={status === "loading"}
                 autoFocus
               />
+
+              {/* City with autocomplete */}
+              <div ref={cityRef} className="relative">
+                <input
+                  type="text"
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  placeholder="City — e.g. Singapore"
+                  className="w-full bg-white/8 border border-white/10 rounded-xl px-4 py-2.5 text-white placeholder-white/25 focus:outline-none focus:border-white/20 text-sm font-medium"
+                  disabled={status === "loading"}
+                  autoComplete="off"
+                />
+                {showCityDropdown && cityResults.length > 0 && (
+                  <div className="absolute top-full mt-1 w-full bg-slate-800 border border-white/15 rounded-xl overflow-hidden z-50 max-h-[30vh] overflow-y-auto">
+                    {cityResults.map((r, i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() => { setCity(r.name); setShowCityDropdown(false); }}
+                        className="w-full px-4 py-2.5 text-left hover:bg-white/10 transition-colors flex items-center justify-between border-b border-white/5 last:border-0 text-sm"
+                      >
+                        <span className="font-medium">{r.name}</span>
+                        <span className="text-[10px] text-white/30">{r.country}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Forecast type */}
+              <div className="flex gap-1">
+                <button
+                  type="button"
+                  onClick={() => { setForecastType("today"); if (sendHour >= 12) setSendHour(6); }}
+                  className={`flex-1 py-2 rounded-l-xl text-[11px] font-bold transition-all cursor-pointer ${
+                    forecastType === "today" ? "bg-white/12 text-white" : "bg-white/4 text-white/30"
+                  }`}
+                >
+                  Today&apos;s weather
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setForecastType("tomorrow"); if (sendHour < 12) setSendHour(20); }}
+                  className={`flex-1 py-2 rounded-r-xl text-[11px] font-bold transition-all cursor-pointer ${
+                    forecastType === "tomorrow" ? "bg-white/12 text-white" : "bg-white/4 text-white/30"
+                  }`}
+                >
+                  Tomorrow&apos;s weather
+                </button>
+              </div>
+
+              {/* Time */}
+              <select
+                value={sendHour}
+                onChange={(e) => setSendHour(Number(e.target.value))}
+                className="w-full bg-white/8 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm font-medium focus:outline-none appearance-none cursor-pointer"
+                disabled={status === "loading"}
+              >
+                {Array.from({ length: 24 }, (_, i) => {
+                  const label = i === 0 ? "12:00 AM" : i < 12 ? `${i}:00 AM` : i === 12 ? "12:00 PM" : `${i - 12}:00 PM`;
+                  return <option key={i} value={i} className="bg-slate-900">{label}</option>;
+                })}
+              </select>
 
               <button
                 type="submit"
