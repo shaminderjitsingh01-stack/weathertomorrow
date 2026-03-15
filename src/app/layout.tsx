@@ -6,6 +6,7 @@ import ShareSidebar from "@/components/ShareSidebar";
 const inter = Inter({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -73,11 +74,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="preconnect" href="https://api.open-meteo.com" />
-        <link rel="preconnect" href="https://geocoding-api.open-meteo.com" />
-        <link rel="preconnect" href="https://www.googletagmanager.com" />
-        <script async src="https://analytics.ahrefs.com/analytics.js" data-key="YAOGsIr1WB3eSfCiGw3f8g" />
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-T9EJK952KQ" />
+        <link rel="preconnect" href="https://api.open-meteo.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://api.open-meteo.com" />
+        <link rel="preconnect" href="https://geocoding-api.open-meteo.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://geocoding-api.open-meteo.com" />
+        <link rel="preconnect" href="https://www.googletagmanager.com" crossOrigin="anonymous" />
+        <script async defer src="https://analytics.ahrefs.com/analytics.js" data-key="YAOGsIr1WB3eSfCiGw3f8g" />
+        <script async defer src="https://www.googletagmanager.com/gtag/js?id=G-T9EJK952KQ" />
         <script
           dangerouslySetInnerHTML={{
             __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-T9EJK952KQ');`,

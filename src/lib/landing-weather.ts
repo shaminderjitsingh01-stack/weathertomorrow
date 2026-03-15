@@ -1,18 +1,18 @@
 // Lightweight weather fetch for landing page components
-// Uses Open-Meteo API with minimal fields for fast responses
+// Uses Open-Meteo BATCH API — single request for all cities
 
 export interface CityWeatherSummary {
   slug: string;
   name: string;
   country: string;
-  temp: number; // current temperature (today's max as proxy)
+  temp: number;
   tempMin: number;
   weatherCode: number;
-  precipitation: number; // mm today
-  rainChance: number; // percentage
+  precipitation: number;
+  rainChance: number;
 }
 
-// Cities to feature on the landing page ticker & trending
+// Cities to feature on the landing page
 export const LANDING_CITIES = [
   { slug: "new-york", name: "New York", country: "US", lat: 40.7128, lon: -74.006 },
   { slug: "london", name: "London", country: "GB", lat: 51.5074, lon: -0.1278 },
@@ -36,13 +36,29 @@ export const LANDING_CITIES = [
   { slug: "rome", name: "Rome", country: "IT", lat: 41.9028, lon: 12.4964 },
 ] as const;
 
-async function fetchCityWeather(
-  city: typeof LANDING_CITIES[number]
-): Promise<CityWeatherSummary | null> {
+// Cache for the batch fetch result
+let cachedData: CityWeatherSummary[] | null = null;
+let cacheTime = 0;
+const CACHE_TTL = 3600 * 1000; // 1 hour in ms
+
+// Single batch request for ALL landing page cities
+export async function fetchLandingWeather(
+  count?: number
+): Promise<CityWeatherSummary[]> {
+  const now = Date.now();
+
+  // Return in-memory cache if fresh
+  if (cachedData && now - cacheTime < CACHE_TTL) {
+    return count ? cachedData.slice(0, count) : cachedData;
+  }
+
   try {
+    const lats = LANDING_CITIES.map((c) => c.lat).join(",");
+    const lons = LANDING_CITIES.map((c) => c.lon).join(",");
+
     const params = new URLSearchParams({
-      latitude: city.lat.toString(),
-      longitude: city.lon.toString(),
+      latitude: lats,
+      longitude: lons,
       daily: "temperature_2m_max,temperature_2m_min,weather_code,precipitation_sum,precipitation_probability_max",
       timezone: "auto",
       forecast_days: "1",
@@ -53,29 +69,49 @@ async function fetchCityWeather(
       { next: { revalidate: 3600 } }
     );
 
-    if (!res.ok) return null;
+    if (!res.ok) return cachedData || [];
 
     const data = await res.json();
 
-    return {
-      slug: city.slug,
-      name: city.name,
-      country: city.country,
-      temp: Math.round(data.daily.temperature_2m_max[0]),
-      tempMin: Math.round(data.daily.temperature_2m_min[0]),
-      weatherCode: data.daily.weather_code[0],
-      precipitation: data.daily.precipitation_sum[0] ?? 0,
-      rainChance: data.daily.precipitation_probability_max[0] ?? 0,
-    };
-  } catch {
-    return null;
-  }
-}
+    // Open-Meteo returns an array when multiple locations are requested
+    const results: CityWeatherSummary[] = [];
 
-export async function fetchLandingWeather(
-  count?: number
-): Promise<CityWeatherSummary[]> {
-  const cities = count ? LANDING_CITIES.slice(0, count) : LANDING_CITIES;
-  const results = await Promise.all(cities.map(fetchCityWeather));
-  return results.filter((r): r is CityWeatherSummary => r !== null);
+    if (Array.isArray(data)) {
+      // Multiple locations — array of results
+      for (let i = 0; i < data.length && i < LANDING_CITIES.length; i++) {
+        const d = data[i];
+        if (!d?.daily) continue;
+        results.push({
+          slug: LANDING_CITIES[i].slug,
+          name: LANDING_CITIES[i].name,
+          country: LANDING_CITIES[i].country,
+          temp: Math.round(d.daily.temperature_2m_max[0]),
+          tempMin: Math.round(d.daily.temperature_2m_min[0]),
+          weatherCode: d.daily.weather_code[0],
+          precipitation: d.daily.precipitation_sum[0] ?? 0,
+          rainChance: d.daily.precipitation_probability_max[0] ?? 0,
+        });
+      }
+    } else if (data?.daily) {
+      // Single location fallback
+      results.push({
+        slug: LANDING_CITIES[0].slug,
+        name: LANDING_CITIES[0].name,
+        country: LANDING_CITIES[0].country,
+        temp: Math.round(data.daily.temperature_2m_max[0]),
+        tempMin: Math.round(data.daily.temperature_2m_min[0]),
+        weatherCode: data.daily.weather_code[0],
+        precipitation: data.daily.precipitation_sum[0] ?? 0,
+        rainChance: data.daily.precipitation_probability_max[0] ?? 0,
+      });
+    }
+
+    // Cache the results
+    cachedData = results;
+    cacheTime = now;
+
+    return count ? results.slice(0, count) : results;
+  } catch {
+    return cachedData || [];
+  }
 }
