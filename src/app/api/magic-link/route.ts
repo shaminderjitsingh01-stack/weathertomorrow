@@ -44,12 +44,12 @@ export async function POST(request: NextRequest) {
   <div style="padding:0 24px 24px;text-align:center;">
     <h1 style="font-size:24px;font-weight:800;color:#1a1a2e;margin:0 0 12px;">Your login link</h1>
     <p style="font-size:14px;color:#666;margin:0 0 24px;">
-      Click the button below to manage your Weather Tomorrow subscription. This link expires in 1 hour.
+      Click the button below to manage your free Weather Tomorrow subscription. This link expires in 1 hour.
     </p>
 
     <a href="${preferencesUrl}"
        style="display:inline-block;background:#1d4ed8;color:white;padding:14px 32px;border-radius:10px;text-decoration:none;font-size:15px;font-weight:700;">
-      Manage my subscription
+      Manage my free subscription
     </a>
 
     <p style="font-size:12px;color:#aaa;margin-top:24px;">
