@@ -28,7 +28,7 @@ function getCityPriority(slug: string): number {
 }
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://weathertomorrow.app";
+  const baseUrl = "https://www.weathertomorrow.app";
 
   // Include ALL curated cities with population-based priority
   const allSlugs = getAllCitySlugs();

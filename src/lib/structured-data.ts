@@ -11,7 +11,7 @@ export function generateWeatherJsonLd(
     "@type": "WebPage",
     name: `Weather Tomorrow in ${city.name} — Forecast`,
     description: `Tomorrow's weather forecast for ${city.name}, ${city.country}: ${getWeatherDescription(tomorrow.weatherCode)}, high of ${Math.round(tomorrow.temperatureMax)}°C, low of ${Math.round(tomorrow.temperatureMin)}°C.`,
-    url: `https://weathertomorrow.app/${city.name.toLowerCase().replace(/\s+/g, "-")}`,
+    url: `https://www.weathertomorrow.app/${city.name.toLowerCase().replace(/\s+/g, "-")}`,
     mainEntity: {
       "@type": "Place",
       name: city.name,
@@ -29,7 +29,7 @@ export function generateWeatherJsonLd(
     publisher: {
       "@type": "Organization",
       name: "Weather Tomorrow",
-      url: "https://weathertomorrow.app",
+      url: "https://www.weathertomorrow.app",
     },
     dateModified: new Date().toISOString(),
   };
@@ -40,11 +40,11 @@ export function generateWebsiteJsonLd() {
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: "Weather Tomorrow",
-    url: "https://weathertomorrow.app",
+    url: "https://www.weathertomorrow.app",
     description: "Get tomorrow's weather forecast instantly for any city in the world.",
     potentialAction: {
       "@type": "SearchAction",
-      target: "https://weathertomorrow.app/{city}",
+      target: "https://www.weathertomorrow.app/{city}",
       "query-input": "required name=city",
     },
   };
@@ -132,13 +132,13 @@ export function generateBreadcrumbJsonLd(
         "@type": "ListItem",
         position: 1,
         name: "Home",
-        item: "https://weathertomorrow.app",
+        item: "https://www.weathertomorrow.app",
       },
       {
         "@type": "ListItem",
         position: 2,
         name: cityName,
-        item: `https://weathertomorrow.app/${slug}`,
+        item: `https://www.weathertomorrow.app/${slug}`,
       },
     ],
   };

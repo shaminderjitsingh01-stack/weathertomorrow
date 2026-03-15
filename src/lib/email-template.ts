@@ -177,7 +177,7 @@ export function generateWeatherEmailHtml(
 
   <!-- CTA -->
   <div style="padding:0 24px 24px;text-align:center;">
-    <a href="https://weathertomorrow.app/${cityName.toLowerCase().replace(/\s+/g, "-")}"
+    <a href="https://www.weathertomorrow.app/${cityName.toLowerCase().replace(/\s+/g, "-")}"
        style="display:inline-block;background:${accentColor};color:white;padding:12px 28px;border-radius:10px;text-decoration:none;font-size:14px;font-weight:700;">
       View Full Forecast
     </a>
@@ -189,11 +189,11 @@ export function generateWeatherEmailHtml(
       <div style="font-size:12px;color:#888;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">Share with Friends</div>
       <div style="font-size:13px;color:#666;margin-bottom:12px;">Know someone in ${cityName}? Share the forecast!</div>
       <div>
-        <a href="https://wa.me/?text=${encodeURIComponent(`${headerLabel} in ${cityName}: ${tempMax}\u00B0C, ${description.toLowerCase()}.\nhttps://weathertomorrow.app/${cityName.toLowerCase().replace(/\s+/g, "-")}`)}"
+        <a href="https://wa.me/?text=${encodeURIComponent(`${headerLabel} in ${cityName}: ${tempMax}\u00B0C, ${description.toLowerCase()}.\nhttps://www.weathertomorrow.app/${cityName.toLowerCase().replace(/\s+/g, "-")}`)}"
            style="display:inline-block;background:#25D366;color:white;padding:8px 16px;border-radius:8px;text-decoration:none;font-size:12px;font-weight:700;margin:0 4px;">
           WhatsApp
         </a>
-        <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent(`${headerLabel} in ${cityName}: ${tempMax}\u00B0C, ${description.toLowerCase()}`)}&url=${encodeURIComponent(`https://weathertomorrow.app/${cityName.toLowerCase().replace(/\s+/g, "-")}`)}"
+        <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent(`${headerLabel} in ${cityName}: ${tempMax}\u00B0C, ${description.toLowerCase()}`)}&url=${encodeURIComponent(`https://www.weathertomorrow.app/${cityName.toLowerCase().replace(/\s+/g, "-")}`)}"
            style="display:inline-block;background:#1a1a2e;color:white;padding:8px 16px;border-radius:8px;text-decoration:none;font-size:12px;font-weight:700;margin:0 4px;">
           Post on X
         </a>

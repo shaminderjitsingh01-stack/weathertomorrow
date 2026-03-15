@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     "weather tomorrow near me",
     "tomorrow temperature",
   ],
-  metadataBase: new URL("https://weathertomorrow.app"),
+  metadataBase: new URL("https://www.weathertomorrow.app"),
   icons: {
     icon: [
       { url: "/api/logo/favicon?size=32", sizes: "32x32", type: "image/png" },
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     title: "Weather Tomorrow — Tomorrow's Forecast, Instantly",
     description:
       "Get tomorrow's weather forecast for any city. Temperature, rain, wind, UV, hourly breakdown & what to wear.",
-    url: "https://weathertomorrow.app",
+    url: "https://www.weathertomorrow.app",
     siteName: "Weather Tomorrow",
     type: "website",
     images: ["/api/logo/thumbnail"],
@@ -61,7 +61,7 @@ export const metadata: Metadata = {
     },
   },
   alternates: {
-    canonical: "https://weathertomorrow.app",
+    canonical: "https://www.weathertomorrow.app",
   },
 };
 

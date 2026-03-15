@@ -33,6 +33,6 @@ export function verifyEmailToken(email: string, token: string): boolean {
  */
 export function getPreferencesUrl(email: string): string {
   const token = generateEmailToken(email);
-  const base = process.env.NEXT_PUBLIC_BASE_URL || "https://weathertomorrow.app";
+  const base = process.env.NEXT_PUBLIC_BASE_URL || "https://www.weathertomorrow.app";
   return `${base}/preferences?email=${encodeURIComponent(email)}&token=${token}`;
 }
