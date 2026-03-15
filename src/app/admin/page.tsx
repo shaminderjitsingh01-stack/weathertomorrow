@@ -178,6 +178,8 @@ export default async function AdminPage({
                   <th className="text-left px-5 py-3 text-white/40 font-semibold text-xs uppercase tracking-wider">Email</th>
                   <th className="text-left px-5 py-3 text-white/40 font-semibold text-xs uppercase tracking-wider">City</th>
                   <th className="text-left px-5 py-3 text-white/40 font-semibold text-xs uppercase tracking-wider">Type</th>
+                  <th className="text-left px-5 py-3 text-white/40 font-semibold text-xs uppercase tracking-wider">Time</th>
+                  <th className="text-left px-5 py-3 text-white/40 font-semibold text-xs uppercase tracking-wider">TZ</th>
                   <th className="text-left px-5 py-3 text-white/40 font-semibold text-xs uppercase tracking-wider">Status</th>
                   <th className="text-left px-5 py-3 text-white/40 font-semibold text-xs uppercase tracking-wider">Date</th>
                 </tr>
@@ -185,7 +187,7 @@ export default async function AdminPage({
               <tbody>
                 {subscribers.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="px-5 py-8 text-center text-white/30">
+                    <td colSpan={7} className="px-5 py-8 text-center text-white/30">
                       No subscribers yet
                     </td>
                   </tr>
@@ -196,6 +198,11 @@ export default async function AdminPage({
                     .map((sub) => {
                       const city = sub.custom_fields?.find((f) => f.name === "weather_city")?.value || "—";
                       const ft = sub.custom_fields?.find((f) => f.name === "forecast_type")?.value || "—";
+                      const hourVal = sub.custom_fields?.find((f) => f.name === "send_hour")?.value;
+                      const tz = sub.custom_fields?.find((f) => f.name === "timezone")?.value || "—";
+                      const sendTime = hourVal != null
+                        ? (Number(hourVal) === 0 ? "12 AM" : Number(hourVal) < 12 ? `${hourVal} AM` : Number(hourVal) === 12 ? "12 PM" : `${Number(hourVal) - 12} PM`)
+                        : "—";
                       const date = sub.created
                         ? new Date(sub.created * 1000).toLocaleDateString("en-US", {
                             month: "short",
@@ -208,6 +215,8 @@ export default async function AdminPage({
                           <td className="px-5 py-3 font-medium truncate max-w-[200px]">{sub.email}</td>
                           <td className="px-5 py-3 text-white/60">{city}</td>
                           <td className="px-5 py-3 text-white/60">{ft}</td>
+                          <td className="px-5 py-3 text-white/60">{sendTime}</td>
+                          <td className="px-5 py-3 text-white/40 text-[11px]">{tz.replace(/_/g, " ")}</td>
                           <td className="px-5 py-3">
                             <span
                               className={`text-xs font-bold px-2 py-0.5 rounded-full ${
