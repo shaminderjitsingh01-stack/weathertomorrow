@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { MDXRemote } from "next-mdx-remote/rsc";
+import remarkGfm from "remark-gfm";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import WeatherTicker from "@/components/WeatherTicker";
@@ -209,7 +210,7 @@ export default async function BlogPostPage({
           {/* Main article */}
           <article className="flex-1 min-w-0">
             <div className="blog-prose">
-              <MDXRemote source={post.content} components={mdxComponents} />
+              <MDXRemote source={post.content} components={mdxComponents} options={{ mdxOptions: { remarkPlugins: [remarkGfm] } }} />
             </div>
 
             {/* City link for city guides */}
