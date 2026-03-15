@@ -1,5 +1,6 @@
 import { MetadataRoute } from "next";
 import { getAllCitySlugs } from "@/lib/cities";
+import { getAllPosts } from "@/lib/blog";
 
 // Approximate population tiers for sitemap priority
 // Higher-population cities get higher priority for Google crawling
@@ -39,6 +40,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: getCityPriority(slug),
   }));
 
+  // Blog posts
+  const blogPosts = getAllPosts();
+  const blogPages = blogPosts.map((post) => ({
+    url: `${baseUrl}/blog/${post.slug}`,
+    lastModified: new Date(post.date),
+    changeFrequency: "monthly" as const,
+    priority: 0.6,
+  }));
+
   return [
     {
       url: baseUrl,
@@ -58,6 +68,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly",
       priority: 0.2,
     },
+    {
+      url: `${baseUrl}/blog`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.5,
+    },
+    ...blogPages,
     ...cityPages,
   ];
 }

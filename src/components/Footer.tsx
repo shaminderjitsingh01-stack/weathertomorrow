@@ -11,6 +11,9 @@ export default function Footer() {
         <Link href="/privacy" className="hover:text-white/40 transition-colors">
           Privacy
         </Link>
+        <Link href="/blog" className="hover:text-white/40 transition-colors">
+          Blog
+        </Link>
         <Link href="/login" className="hover:text-white/40 transition-colors">
           Free Daily Forecast
         </Link>
