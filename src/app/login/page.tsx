@@ -11,6 +11,8 @@ interface CityResult {
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [city, setCity] = useState("");
+  const [forecastType, setForecastType] = useState<"today" | "tomorrow">("tomorrow");
+  const [sendHour, setSendHour] = useState(20);
   const [cityResults, setCityResults] = useState<CityResult[]>([]);
   const [showCityDropdown, setShowCityDropdown] = useState(false);
   const [status, setStatus] = useState<"idle" | "loading" | "sent" | "error">("idle");
@@ -81,7 +83,7 @@ export default function LoginPage() {
       const res = await fetch("/api/magic-link", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, city: city.trim() }),
+        body: JSON.stringify({ email, city: city.trim(), forecastType, sendHour }),
       });
 
       const data = await res.json();
@@ -193,6 +195,62 @@ export default function LoginPage() {
                     ))}
                   </div>
                 )}
+              </div>
+
+              {/* Forecast type */}
+              <div>
+                <label className="block text-[11px] text-white/40 font-semibold uppercase tracking-wider mb-2">
+                  I want to receive
+                </label>
+                <div className="flex gap-1">
+                  <button
+                    type="button"
+                    onClick={() => { setForecastType("today"); if (sendHour >= 12) setSendHour(6); }}
+                    className={`flex-1 py-2.5 rounded-l-xl text-[11px] sm:text-xs font-bold transition-all cursor-pointer ${
+                      forecastType === "today"
+                        ? "bg-white/12 text-white"
+                        : "bg-white/4 text-white/30 hover:text-white/50"
+                    }`}
+                  >
+                    Today&apos;s weather
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setForecastType("tomorrow"); if (sendHour < 12) setSendHour(20); }}
+                    className={`flex-1 py-2.5 rounded-r-xl text-[11px] sm:text-xs font-bold transition-all cursor-pointer ${
+                      forecastType === "tomorrow"
+                        ? "bg-white/12 text-white"
+                        : "bg-white/4 text-white/30 hover:text-white/50"
+                    }`}
+                  >
+                    Tomorrow&apos;s weather
+                  </button>
+                </div>
+                <p className="text-[10px] text-white/20 mt-1.5">
+                  {forecastType === "today"
+                    ? "Morning delivery — plan your day before heading out"
+                    : "Evening delivery — plan ahead for tomorrow"}
+                </p>
+              </div>
+
+              {/* Send time */}
+              <div>
+                <label className="block text-[11px] text-white/40 font-semibold uppercase tracking-wider mb-2">
+                  Deliver at
+                </label>
+                <select
+                  value={sendHour}
+                  onChange={(e) => setSendHour(Number(e.target.value))}
+                  className="w-full search-input rounded-xl px-4 py-3 text-white text-sm font-medium focus:outline-none bg-transparent appearance-none cursor-pointer"
+                  disabled={status === "loading"}
+                >
+                  {Array.from({ length: 24 }, (_, i) => {
+                    const label = i === 0 ? "12:00 AM" : i < 12 ? `${i}:00 AM` : i === 12 ? "12:00 PM" : `${i - 12}:00 PM`;
+                    return (
+                      <option key={i} value={i} className="bg-slate-900">{label}</option>
+                    );
+                  })}
+                </select>
               </div>
 
               <button

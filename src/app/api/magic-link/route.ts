@@ -5,7 +5,7 @@ import { sendWeatherEmail } from "@/lib/resend";
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, city } = await request.json();
+    const { email, city, forecastType, sendHour } = await request.json();
 
     if (!email || !email.includes("@")) {
       return NextResponse.json({ error: "Valid email required" }, { status: 400 });
@@ -15,11 +15,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "City is required" }, { status: 400 });
     }
 
-    // Check if subscriber exists — if not, subscribe them with the provided city
+    // Check if subscriber exists — if not, subscribe them with their preferences
     const subscriber = await getSubscriberByEmail(email);
 
     if (!subscriber) {
-      await createSubscriber(email, city.trim(), "auto", 20, "tomorrow");
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
+      await createSubscriber(
+        email,
+        city.trim(),
+        tz,
+        sendHour ?? 20,
+        forecastType || "tomorrow"
+      );
     }
 
     // Generate magic link
