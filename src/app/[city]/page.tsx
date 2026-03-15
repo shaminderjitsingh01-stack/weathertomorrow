@@ -13,6 +13,7 @@ import { getWeatherByCoords, getWeatherGradient, getWeatherDescription, searchLo
 import { getCityBySlug, getCityLabel, slugToQuery, CityData } from "@/lib/cities";
 import SubscribeForm from "@/components/SubscribeForm";
 import ShareButton from "@/components/ShareButton";
+import WeekAhead from "@/components/WeekAhead";
 import LoginButton from "@/components/LoginButton";
 import { generateWeatherJsonLd, generateFaqJsonLd, generateBreadcrumbJsonLd } from "@/lib/structured-data";
 
@@ -209,6 +210,12 @@ export default async function CityPage({
         <div className="mt-3">
           <HourlyForecast hours={weather.hourlyTomorrow} />
         </div>
+
+        {weather.weekAhead.length > 0 && (
+          <div className="mt-3">
+            <WeekAhead days={weather.weekAhead} />
+          </div>
+        )}
 
         {/* Nearby cities — internal linking for SEO */}
         <div className="mt-3">

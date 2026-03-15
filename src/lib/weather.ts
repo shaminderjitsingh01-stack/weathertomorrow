@@ -35,6 +35,7 @@ export interface WeatherData {
   today: DailyForecast;
   tomorrow: DailyForecast;
   hourlyTomorrow: HourlyForecast[];
+  weekAhead: DailyForecast[];
 }
 
 export async function getWeatherByCoords(
@@ -73,7 +74,7 @@ export async function getWeatherByCoords(
       "is_day",
     ].join(","),
     timezone,
-    forecast_days: "2",
+    forecast_days: "7",
   });
 
   let data;
@@ -139,7 +140,13 @@ export async function getWeatherByCoords(
     });
   }
 
-  return { today, tomorrow, hourlyTomorrow };
+  // Week ahead: days 2-6 (skip today at 0 and tomorrow at 1)
+  const weekAhead: DailyForecast[] = [];
+  for (let i = 2; i < 7 && i < data.daily.time.length; i++) {
+    weekAhead.push(parseDailyIndex(i));
+  }
+
+  return { today, tomorrow, hourlyTomorrow, weekAhead };
 }
 
 // Geocoding

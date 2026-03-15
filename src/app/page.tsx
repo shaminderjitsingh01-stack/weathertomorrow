@@ -9,6 +9,7 @@ import Footer from "@/components/Footer";
 import { getWeatherByCoords, getWeatherGradient, reverseGeocode } from "@/lib/weather";
 import { generateWebsiteJsonLd } from "@/lib/structured-data";
 import SubscribeForm from "@/components/SubscribeForm";
+import WeekAhead from "@/components/WeekAhead";
 import WeatherTicker from "@/components/WeatherTicker";
 import WeatherParticles from "@/components/WeatherParticles";
 import TrendingWeather from "@/components/TrendingWeather";
@@ -59,6 +60,12 @@ async function WeatherDisplay({
         <div className="mt-3">
           <HourlyForecast hours={weather.hourlyTomorrow} />
         </div>
+
+        {weather.weekAhead.length > 0 && (
+          <div className="mt-3">
+            <WeekAhead days={weather.weekAhead} />
+          </div>
+        )}
 
         <Footer />
       </div>
