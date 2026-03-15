@@ -33,11 +33,13 @@ export async function generateMetadata({
       url: `https://www.weathertomorrow.app/blog/${post.slug}`,
       type: "article",
       publishedTime: post.date,
+      images: [`/api/og/blog/${post.slug}`],
     },
     twitter: {
-      card: "summary",
+      card: "summary_large_image",
       title: post.title,
       description: post.excerpt,
+      images: [`/api/og/blog/${post.slug}`],
     },
     alternates: {
       canonical: `https://www.weathertomorrow.app/blog/${post.slug}`,
@@ -185,6 +187,16 @@ export default async function BlogPostPage({
             </svg>
             All Articles
           </Link>
+        </div>
+
+        {/* Featured image */}
+        <div className="mb-6 rounded-2xl overflow-hidden">
+          <img
+            src={`/api/og/blog/${post.slug}`}
+            alt={post.title}
+            className="w-full h-auto"
+            loading="eager"
+          />
         </div>
 
         {/* Article header */}

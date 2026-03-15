@@ -105,44 +105,37 @@ export default function BlogListClient({ posts }: { posts: BlogPostMeta[] }) {
           <p className="text-white/30 text-sm">No articles found.</p>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {filtered.map((post) => (
             <Link
               key={post.slug}
               href={`/blog/${post.slug}`}
-              className="block card-interactive rounded-2xl p-5 sm:p-6"
+              className="block card-interactive rounded-2xl overflow-hidden group"
             >
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-2">
-                    <CategoryBadge category={post.category} />
-                    <span className="text-[10px] text-white/25 font-semibold">
-                      {post.readTime} min read
-                    </span>
-                  </div>
-                  <h2 className="text-base sm:text-lg font-bold mb-1.5 leading-snug">
-                    {post.title}
-                  </h2>
-                  <p className="text-sm text-white/40 leading-relaxed line-clamp-2">
-                    {post.excerpt}
-                  </p>
-                  <p className="text-[11px] text-white/20 mt-2 font-medium">
-                    {formatDate(post.date)}
-                  </p>
+              <div className="aspect-[1200/630] overflow-hidden">
+                <img
+                  src={`/api/og/blog/${post.slug}`}
+                  alt={post.title}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  loading="lazy"
+                />
+              </div>
+              <div className="p-4 sm:p-5">
+                <div className="flex items-center gap-2 mb-2">
+                  <CategoryBadge category={post.category} />
+                  <span className="text-[10px] text-white/25 font-semibold">
+                    {post.readTime} min read
+                  </span>
                 </div>
-                <svg
-                  className="w-5 h-5 text-white/15 flex-shrink-0 mt-1"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
+                <h2 className="text-sm sm:text-base font-bold mb-1.5 leading-snug">
+                  {post.title}
+                </h2>
+                <p className="text-xs text-white/40 leading-relaxed line-clamp-2">
+                  {post.excerpt}
+                </p>
+                <p className="text-[11px] text-white/20 mt-2 font-medium">
+                  {formatDate(post.date)}
+                </p>
               </div>
             </Link>
           ))}
