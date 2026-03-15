@@ -76,6 +76,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://api.open-meteo.com" />
         <link rel="preconnect" href="https://geocoding-api.open-meteo.com" />
         <link rel="preconnect" href="https://www.googletagmanager.com" />
+        <script async src="https://analytics.ahrefs.com/analytics.js" data-key="YAOGsIr1WB3eSfCiGw3f8g" />
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-T9EJK952KQ" />
         <script
           dangerouslySetInnerHTML={{
