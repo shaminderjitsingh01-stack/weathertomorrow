@@ -83,7 +83,13 @@ export default function LoginPage() {
       const res = await fetch("/api/magic-link", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, city: city.trim(), forecastType, sendHour }),
+        body: JSON.stringify({
+          email,
+          city: city.trim(),
+          forecastType,
+          sendHour,
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        }),
       });
 
       const data = await res.json();

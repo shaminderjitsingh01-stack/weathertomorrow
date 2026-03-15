@@ -5,7 +5,7 @@ import { sendWeatherEmail } from "@/lib/resend";
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, city, forecastType, sendHour } = await request.json();
+    const { email, city, forecastType, sendHour, timezone } = await request.json();
 
     if (!email || !email.includes("@")) {
       return NextResponse.json({ error: "Valid email required" }, { status: 400 });
@@ -19,11 +19,10 @@ export async function POST(request: NextRequest) {
     const subscriber = await getSubscriberByEmail(email);
 
     if (!subscriber) {
-      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
       await createSubscriber(
         email,
         city.trim(),
-        tz,
+        timezone || "UTC",
         sendHour ?? 20,
         forecastType || "tomorrow"
       );

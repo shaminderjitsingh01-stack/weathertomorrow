@@ -34,7 +34,7 @@ export default function SubscribeForm({
         body: JSON.stringify({
           email,
           city: cityName,
-          timezone,
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || timezone,
           sendHour,
           forecastType,
         }),
