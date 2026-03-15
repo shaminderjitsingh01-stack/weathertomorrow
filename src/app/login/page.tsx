@@ -1,12 +1,63 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+
+interface CityResult {
+  name: string;
+  country: string;
+  admin1?: string;
+}
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [city, setCity] = useState("");
+  const [cityResults, setCityResults] = useState<CityResult[]>([]);
+  const [showCityDropdown, setShowCityDropdown] = useState(false);
   const [status, setStatus] = useState<"idle" | "loading" | "sent" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
+  const cityRef = useRef<HTMLDivElement>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>(null);
+
+  // Close dropdown on click outside
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (cityRef.current && !cityRef.current.contains(e.target as Node)) {
+        setShowCityDropdown(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // City autocomplete
+  useEffect(() => {
+    if (city.length < 2) {
+      setCityResults([]);
+      setShowCityDropdown(false);
+      return;
+    }
+
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+
+    debounceRef.current = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/search?q=${encodeURIComponent(city)}`);
+        if (res.ok) {
+          const data = await res.json();
+          setCityResults(data.slice(0, 6));
+          setShowCityDropdown(data.length > 0);
+        }
+      } catch {
+        // silently fail
+      }
+    }, 300);
+  }, [city]);
+
+  function selectCity(result: CityResult) {
+    setCity(result.name);
+    setShowCityDropdown(false);
+    setCityResults([]);
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -105,7 +156,7 @@ export default function LoginPage() {
                 />
               </div>
 
-              <div>
+              <div ref={cityRef} className="relative">
                 <label className="block text-[11px] text-white/40 font-semibold uppercase tracking-wider mb-2">
                   City
                 </label>
@@ -116,7 +167,32 @@ export default function LoginPage() {
                   placeholder="e.g. Singapore, London, New York"
                   className="w-full search-input rounded-xl px-4 py-3.5 text-white placeholder-white/25 focus:outline-none text-sm font-medium"
                   disabled={status === "loading"}
+                  autoComplete="off"
                 />
+
+                {showCityDropdown && cityResults.length > 0 && (
+                  <div className="absolute top-full mt-2 w-full bg-slate-900/95 backdrop-blur-xl border border-white/15 shadow-2xl rounded-xl overflow-hidden z-50 max-h-[40vh] overflow-y-auto">
+                    {cityResults.map((result, i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() => selectCity(result)}
+                        className="w-full px-4 py-3 text-left hover:bg-white/12 transition-colors flex items-center justify-between border-b border-white/8 last:border-0"
+                      >
+                        <div className="flex items-center gap-3">
+                          <svg className="w-4 h-4 text-white/20 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                          </svg>
+                          <span className="text-sm font-medium">{result.name}</span>
+                        </div>
+                        <span className="text-xs text-white/30">
+                          {result.admin1 ? `${result.admin1}, ` : ""}{result.country}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <button
