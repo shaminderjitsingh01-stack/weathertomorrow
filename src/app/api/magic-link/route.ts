@@ -15,6 +15,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "City is required" }, { status: 400 });
     }
 
+    // Basic spam validation
+    const cityTrimmed = city.trim();
+    if (
+      cityTrimmed.length > 50 ||
+      cityTrimmed.length < 2 ||
+      /[A-Z]{5,}/.test(cityTrimmed) ||
+      /[^a-zA-Z\s\-'.áàâãäéèêëíìîïóòôõöúùûüñçÀ-ÿ]/.test(cityTrimmed)
+    ) {
+      return NextResponse.json({ error: "Please enter a valid city name" }, { status: 400 });
+    }
+
     // Check if subscriber exists
     const subscriber = await getSubscriberByEmail(email);
 
