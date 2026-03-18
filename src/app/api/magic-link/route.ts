@@ -15,14 +15,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "City is required" }, { status: 400 });
     }
 
-    // Basic spam validation
+    // Spam validation
     const cityTrimmed = city.trim();
-    if (
+    const isGibberish =
       cityTrimmed.length > 50 ||
       cityTrimmed.length < 2 ||
-      /[A-Z]{5,}/.test(cityTrimmed) ||
-      /[^a-zA-Z\s\-'.áàâãäéèêëíìîïóòôõöúùûüñçÀ-ÿ]/.test(cityTrimmed)
-    ) {
+      /[A-Z]{4,}/.test(cityTrimmed) ||
+      /[^a-zA-Z\s\-'.áàâãäéèêëíìîïóòôõöúùûüñçÀ-ÿ]/.test(cityTrimmed) ||
+      (cityTrimmed.length > 12 && !cityTrimmed.includes(" ") && !cityTrimmed.includes("-")) ||
+      /[bcdfghjklmnpqrstvwxyz]{4,}/i.test(cityTrimmed) ||
+      /[a-z][A-Z][a-z][A-Z]/.test(cityTrimmed);
+    if (isGibberish) {
       return NextResponse.json({ error: "Please enter a valid city name" }, { status: 400 });
     }
 

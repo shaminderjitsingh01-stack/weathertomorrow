@@ -20,14 +20,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Basic spam validation
+    // Spam validation
     const cityTrimmed = city.trim();
-    if (
+    const isGibberish =
       cityTrimmed.length > 50 ||
       cityTrimmed.length < 2 ||
-      /[A-Z]{5,}/.test(cityTrimmed) ||
-      /[^a-zA-Z\s\-'.áàâãäéèêëíìîïóòôõöúùûüñçÀ-ÿ]/.test(cityTrimmed)
-    ) {
+      /[A-Z]{4,}/.test(cityTrimmed) ||
+      /[^a-zA-Z\s\-'.áàâãäéèêëíìîïóòôõöúùûüñçÀ-ÿ]/.test(cityTrimmed) ||
+      // No spaces in a long name = likely gibberish
+      (cityTrimmed.length > 12 && !cityTrimmed.includes(" ") && !cityTrimmed.includes("-")) ||
+      // 4+ consonants in a row = not a real word
+      /[bcdfghjklmnpqrstvwxyz]{4,}/i.test(cityTrimmed) ||
+      // Mixed case pattern like "uiBvpxw" — real cities don't do this
+      /[a-z][A-Z][a-z][A-Z]/.test(cityTrimmed);
+    if (isGibberish) {
       return NextResponse.json(
         { error: "Please enter a valid city name" },
         { status: 400 }
