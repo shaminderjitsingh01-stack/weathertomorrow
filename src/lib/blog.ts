@@ -17,12 +17,18 @@ export type BlogPostMeta = Omit<BlogPost, "content">;
 
 const BLOG_DIR = path.join(process.cwd(), "content", "blog");
 
-export function getAllPosts(): BlogPostMeta[] {
+/** Check if a post's date has passed. Posts publish at midnight UTC = 8am SGT. */
+function isPublished(dateStr: string): boolean {
+  const publishTime = new Date(dateStr + "T00:00:00Z");
+  return publishTime.getTime() <= Date.now();
+}
+
+function readAllPostMetas(): BlogPostMeta[] {
   if (!fs.existsSync(BLOG_DIR)) return [];
 
   const files = fs.readdirSync(BLOG_DIR).filter((f) => f.endsWith(".mdx"));
 
-  const posts = files.map((file) => {
+  return files.map((file) => {
     const raw = fs.readFileSync(path.join(BLOG_DIR, file), "utf-8");
     const { data } = matter(raw);
     return {
@@ -35,13 +41,12 @@ export function getAllPosts(): BlogPostMeta[] {
       readTime: data.readTime as number,
     };
   });
+}
 
-  // Sort newest first.
-  // Note: All posts are shown regardless of date. The frontmatter date is used
-  // for display and sorting only. Since the site is statically built, future-dated
-  // posts become visible after deployment — there's no runtime date filtering.
-  // To "schedule" a post, deploy on or after its publish date.
-  return posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+export function getAllPosts(): BlogPostMeta[] {
+  return readAllPostMetas()
+    .filter((p) => isPublished(p.date))
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 }
 
 export function getPostBySlug(slug: string): BlogPost | null {
@@ -54,6 +59,7 @@ export function getPostBySlug(slug: string): BlogPost | null {
     const { data, content } = matter(raw);
 
     if (data.slug === slug) {
+      if (!isPublished(data.date as string)) return null;
       return {
         slug: data.slug as string,
         title: data.title as string,
@@ -76,6 +82,7 @@ export function getRelatedPosts(currentSlug: string, category: string, limit = 3
     .slice(0, limit);
 }
 
+/** Returns all slugs including future posts — used by generateStaticParams for pre-building. */
 export function getAllSlugs(): string[] {
-  return getAllPosts().map((p) => p.slug);
+  return readAllPostMetas().map((p) => p.slug);
 }

@@ -11,6 +11,8 @@ import LoginButton from "@/components/LoginButton";
 import { getPostBySlug, getRelatedPosts, getAllSlugs } from "@/lib/blog";
 import BlogTableOfContents from "@/components/BlogTableOfContents";
 
+export const revalidate = 3600;
+
 export async function generateStaticParams() {
   return getAllSlugs().map((slug) => ({ slug }));
 }
